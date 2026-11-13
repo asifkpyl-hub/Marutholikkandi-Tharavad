@@ -167,7 +167,17 @@ export default {
     const url=new URL(req.url);
     if(url.pathname.startsWith("/api/")) {
       try { return await api(req,env,url); }
-      catch(e) { console.error("API error",e); return json({error:"Server error. Check Worker logs."},500); }
+      catch(e) {
+        const diagnostic = {
+          name: e?.name || "Error",
+          message: String(e?.message || e),
+          stack: String(e?.stack || "").slice(0, 3000),
+          path: url.pathname,
+          method: req.method
+        };
+        console.error("MARUTHOLIKKANDI_API_FAILURE", JSON.stringify(diagnostic));
+        return json({error:"Server error. Check Worker invocation logs.", requestId: req.headers.get("cf-ray") || "unknown"},500);
+      }
     }
     return env.ASSETS.fetch(req);
   }
