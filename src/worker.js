@@ -47,7 +47,7 @@ async function auth(req, env) {
   return user && user.active ? user : null;
 }
 function sessionCookie(token, maxAge=28800) {
-  return `mt_session=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
+  return `mt_session=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
 }
 async function body(req) { try { return await req.json(); } catch { return {}; } }
 function safeMember(m) {
@@ -190,7 +190,7 @@ export default {
           method: req.method
         };
         console.error("MARUTHOLIKKANDI_API_FAILURE", JSON.stringify(diagnostic));
-        return json({error:"Server error. Check Worker invocation logs.", requestId: req.headers.get("cf-ray") || "unknown"},500);
+        return json({error:"Server error: "+String(e?.message||e), requestId:req.headers.get("cf-ray")||"unknown",path:url.pathname},500);
       }
     }
     return env.ASSETS.fetch(req);
