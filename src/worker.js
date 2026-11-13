@@ -65,18 +65,31 @@ async function api(req, env, url) {
   const path = url.pathname;
   if (req.method === "GET" && path === "/api/health") return json({ok:true, app:"Marutholikkandi Tharavad"});
   if (req.method === "POST" && path === "/api/setup") {
-    if (!env.SETUP_KEY || req.headers.get("x-setup-key") !== env.SETUP_KEY) return json({error:"Setup not authorized"}, 403);
-    const count = await env.FAMILY_DB.prepare("SELECT COUNT(*) AS n FROM users").first();
-    if (count.n) return json({error:"Initial administrator already exists"}, 409);
-    const b = await body(req);
-    if (!/^[a-zA-Z0-9._-]{4,40}$/.test(b.username || "") || (b.password || "").length < 12 || !(b.display_name || "").trim())
-      return json({error:"Use a 4–40 character username, display name, and password of at least 12 characters."}, 400);
-    const p = await hashPassword(b.password);
-    const id = uuid();
-    await env.FAMILY_DB.prepare("INSERT INTO users(id,username,display_name,password_hash,password_salt,role) VALUES(?,?,?,?,?,'admin')")
-      .bind(id,b.username.toLowerCase(),b.display_name.trim(),p.hash,p.salt).run();
-    await audit(env,{id},"initial_admin_created");
-    return json({ok:true,message:"Administrator created. Remove SETUP_KEY after setup."},201);
+    let stage = "check_setup_key";
+    try {
+      if (!env.SETUP_KEY || req.headers.get("x-setup-key") !== env.SETUP_KEY)
+        return json({error:"Setup not authorized"}, 403);
+      stage = "check_users_table";
+      const count = await env.FAMILY_DB.prepare("SELECT COUNT(*) AS n FROM users").first();
+      if (count.n) return json({error:"Initial administrator already exists"}, 409);
+      stage = "read_request";
+      const b = await body(req);
+      if (!/^[a-zA-Z0-9._-]{4,40}$/.test(b.username || "") || (b.password || "").length < 12 || !(b.display_name || "").trim())
+        return json({error:"Use a 4–40 character username, display name, and password of at least 12 characters."}, 400);
+      stage = "hash_password";
+      const p = await hashPassword(b.password);
+      const id = uuid();
+      stage = "insert_admin";
+      await env.FAMILY_DB.prepare("INSERT INTO users(id,username,display_name,password_hash,password_salt,role) VALUES(?,?,?,?,?,'admin')")
+        .bind(id,b.username.toLowerCase(),b.display_name.trim(),p.hash,p.salt).run();
+      stage = "write_audit_log";
+      await audit(env,{id},"initial_admin_created");
+      return json({ok:true,message:"Administrator created. Remove SETUP_KEY after setup."},201);
+    } catch (e) {
+      const detail = {stage, name:e?.name || "Error", message:String(e?.message || e)};
+      console.error("MARUTHOLIKKANDI_SETUP_FAILURE", JSON.stringify(detail));
+      return json({error:"Administrator setup failed", stage, detail:detail.message},500);
+    }
   }
   if (req.method === "POST" && path === "/api/login") {
     const b = await body(req);
