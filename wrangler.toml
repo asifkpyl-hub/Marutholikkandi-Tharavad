@@ -1,0 +1,16 @@
+name = "marutholikkandi-tharavad"
+main = "src/worker.js"
+compatibility_date = "2026-11-14"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[[d1_databases]]
+binding = "FAMILY_DB"
+database_name = "marutholikkandi-family"
+database_id = "REPLACE_WITH_DATABASE_ID"
+migrations_dir = "migrations"
