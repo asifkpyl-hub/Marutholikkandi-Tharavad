@@ -11,6 +11,6 @@ not_found_handling = "single-page-application"
 
 [[d1_databases]]
 binding = "FAMILY_DB"
-database_name = "marutholikkandi-family"
-database_id = "REPLACE_WITH_DATABASE_ID"
+database_name = "marutholikkandi-family-db"
+database_id = "7c89ea04-f51b-42d6-90d8-aa5ea5f3de02"
 migrations_dir = "migrations"
