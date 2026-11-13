@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Initial administrator setup | Marutholikkandi Tharavad</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:#f7f1e5;color:#24352e;font:16px system-ui,sans-serif}.card{width:min(100%,460px);background:white;border:1px solid #e7dfcf;border-radius:18px;padding:26px;box-shadow:0 12px 35px #203b2a12}h1{font-size:1.5rem;color:#173c31;margin:0 0 8px}.muted{color:#718078;font-size:.92rem;line-height:1.5}label{display:block;margin:15px 0 6px;font-weight:600}input{width:100%;padding:12px;border:1px solid #d8d6c9;border-radius:9px;font:inherit}button{margin-top:20px;width:100%;padding:13px;border:0;border-radius:9px;background:#d5ad62;color:#1d3028;font:inherit;font-weight:700}#msg{margin-top:14px;white-space:pre-wrap}.ok{color:#187348}.err{color:#b42318}
+</style>
+</head>
+<body><main class="card">
+<h1>മരുതോളിക്കണ്ടി തറവാട്</h1>
+<p class="muted">Create the first administrator account. This one-time setup is available only while no administrator exists. Keep your setup key private.</p>
+<form id="setup">
+<label for="key">One-time setup key</label><input id="key" type="password" autocomplete="off" required>
+<label for="username">Admin username</label><input id="username" value="asif123" minlength="4" maxlength="40" pattern="[A-Za-z0-9._-]+" required>
+<label for="display">Display name</label><input id="display" autocomplete="name" required>
+<label for="password">New password (at least 12 characters)</label><input id="password" type="password" minlength="12" autocomplete="new-password" required>
+<label for="confirm">Confirm password</label><input id="confirm" type="password" minlength="12" autocomplete="new-password" required>
+<button type="submit">Create administrator</button>
+</form><p id="msg" class="muted" role="status"></p>
+</main>
+<script>
+document.getElementById("setup").addEventListener("submit",async e=>{
+ e.preventDefault();const msg=document.getElementById("msg");msg.className="muted";msg.textContent="";
+ const key=document.getElementById("key").value,username=document.getElementById("username").value.trim(),display_name=document.getElementById("display").value.trim(),password=document.getElementById("password").value,confirm=document.getElementById("confirm").value;
+ if(password!==confirm){msg.className="err";msg.textContent="Passwords do not match.";return;}
+ if(password.length<12){msg.className="err";msg.textContent="Use at least 12 characters.";return;}
+ try{const r=await fetch("/api/setup",{method:"POST",headers:{"content-type":"application/json","x-setup-key":key},body:JSON.stringify({username,display_name,password})});const d=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(d.error||"Setup failed ("+r.status+").");
+ msg.className="ok";msg.textContent="Administrator created successfully. Now remove the SETUP_KEY secret in Cloudflare, then sign in from the website's Admin Login button.";
+ e.target.reset();
+ }catch(err){msg.className="err";msg.textContent=err.message;}
+});
+</script></body></html>
