@@ -6,7 +6,7 @@
 <title>മരുതോളിക്കണ്ടി തറവാട് | കുടുംബവൃക്ഷം</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=20261114-fix1">
 </head>
 <body>
 <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
@@ -29,7 +29,7 @@
  <label><span data-i18n="birth">ജനന തീയതി</span><input id="birth_date" type="date"></label><label><span data-i18n="death">മരണ തീയതി</span><input id="death_date" type="date"></label>
  <label><span data-i18n="father">പിതാവ്</span><select id="parent1_id"><option value="">തിരഞ്ഞെടുക്കുക</option></select></label><label><span data-i18n="mother">മാതാവ്</span><select id="parent2_id"><option value="">തിരഞ്ഞെടുക്കുക</option></select></label>
  <label><span data-i18n="spouse">ജീവിത പങ്കാളി</span><input id="spouse_name"></label><label><span data-i18n="branch">കുടുംബശാഖ</span><input id="branch"></label>
- <label class="wide"><span data-i18n="bio">ചുരുക്ക വിവരണം</span><textarea id="biography" rows="3"></textarea></label><label class="wide"><span data-i18n="photo">ഫോട്ടോ URL (ഐച്ഛികം)</span><input id="photo_url" type="url" placeholder="https://…"></label><label class="wide"><span data-i18n="choosePhoto">ഫോണിൽ നിന്ന് പ്രൊഫൈൽ ചിത്രം തിരഞ്ഞെടുക്കുക</span><input id="photo_file" type="file" accept="image/*"><small data-i18n="photoHint">ചിത്രം സ്വയം ചെറുതാക്കി സേവ് ചെയ്യും.</small><img id="photoPreview" class="photo-preview hidden" alt="Profile preview"></label>
+ <label class="wide"><span data-i18n="bio">ചുരുക്ക വിവരണം</span><textarea id="biography" rows="3"></textarea></label><label class="wide"><span data-i18n="photo">ഫോട്ടോ URL (ഐച്ഛികം)</span><input id="photo_url" type="text" placeholder="https://…"></label><label class="wide"><span data-i18n="choosePhoto">ഫോണിൽ നിന്ന് പ്രൊഫൈൽ ചിത്രം തിരഞ്ഞെടുക്കുക</span><input id="photo_file" type="file" accept="image/*"><small data-i18n="photoHint">ചിത്രം സ്വയം ചെറുതാക്കി സേവ് ചെയ്യും.</small><img id="photoPreview" class="photo-preview hidden" alt="Profile preview"></label>
  <label class="check"><input id="is_public" type="checkbox" checked><span data-i18n="public">പൊതുജനങ്ങൾക്ക് കാണിക്കാം</span></label>
  <div class="wide form-actions"><button class="gold" type="submit" data-i18n="save">സേവ് ചെയ്യുക</button><button id="clearForm" type="button" class="outline" data-i18n="clear">മായ്ക്കുക</button><span id="formMsg" class="muted"></span></div></form><div id="adminMembers" class="admin-list"></div></div>
  <div id="editorsTabPanel" class="hidden"><form id="editorForm" class="form-grid"><h3 data-i18n="newEditor">പുതിയ എഡിറ്റർ അക്കൗണ്ട്</h3><label>Username<input id="editor_username" required minlength="4"></label><label><span data-i18n="displayName">പേര് *</span><input id="editor_name" required></label><label class="wide"><span data-i18n="tempPassword">താൽക്കാലിക പാസ്‌വേഡ് *</span><input id="editor_password" type="password" required minlength="12"><small data-i18n="passwordHint">കുറഞ്ഞത് 12 അക്ഷരങ്ങൾ.</small></label><div class="wide"><button class="gold" data-i18n="createEditor">എഡിറ്റർ സൃഷ്ടിക്കുക</button><span id="editorMsg" class="muted"></span></div></form><div id="editorList" class="admin-list"></div></div>
@@ -37,4 +37,4 @@
 </main>
 <dialog id="loginDialog"><form id="loginForm" method="dialog" class="login-box"><button type="button" id="closeLogin" class="x">×</button><p class="eyebrow">ADMIN ACCESS</p><h2 data-i18n="adminLogin">അഡ്മിൻ ലോഗിൻ</h2><label>Username<input id="loginUser" autocomplete="username" required></label><label>Password<input id="loginPass" type="password" autocomplete="current-password" required></label><button class="gold" data-i18n="login">ലോഗിൻ</button><p id="loginMsg" class="muted"></p></form></dialog>
 <footer><span>✦</span> മരുതോളിക്കണ്ടി തറവാട് <span data-i18n="footer">· പൈതൃകം തലമുറകളിലേക്ക്</span></footer>
-<script src="/app.js"></script></body></html>
+<script src="/app.js?v=20261114-fix1"></script></body></html>
