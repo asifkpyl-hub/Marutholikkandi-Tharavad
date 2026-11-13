@@ -54,7 +54,7 @@ function safeMember(m) {
   return {id:m.id, full_name:m.full_name, gender:m.gender, birth_date:m.birth_date,
     death_date:m.death_date, parent1_id:m.parent1_id, parent2_id:m.parent2_id,
     spouse_name:m.spouse_name, biography:m.biography, photo_url:m.photo_url,
-    branch:m.branch};
+    branch:m.branch, is_public:!!m.is_public};
 }
 async function audit(env, user, action, memberId=null) {
   await env.FAMILY_DB.prepare("INSERT INTO audit_log(id,user_id,action,member_id) VALUES(?,?,?,?)")
@@ -97,6 +97,7 @@ async function api(req, env, url) {
     if (!user) return json({error:"Invalid username or password"},401);
     const p = await hashPassword(b.password || "", user.password_salt);
     if (p.hash !== user.password_hash) return json({error:"Invalid username or password"},401);
+    if (!env.SESSION_SECRET) return json({error:"Server session secret is not configured"},500);
     const token = await sign({sub:user.id,exp:Date.now()+8*60*60*1000},env.SESSION_SECRET);
     return new Response(JSON.stringify({ok:true,user:{username:user.username,display_name:user.display_name,role:user.role}}),{
       headers:{"content-type":"application/json","set-cookie":sessionCookie(token),"cache-control":"no-store"}
