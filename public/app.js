@@ -41,6 +41,17 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{activeTab=b.da
 async function loadEditors(){const d=await api("/api/admin/users");$("editorList").innerHTML=d.users.map(u=>`<div class="admin-row"><span>${esc(u.display_name)} · ${esc(u.username)} · ${u.role} · ${u.active?"Active":"Disabled"}</span>${u.role==="editor"?`<button class="outline" onclick="toggleEditor('${u.id}',${u.active?0:1})">${u.active?"Disable":"Enable"}</button>`:""}</div>`).join("");}
 window.toggleEditor=async(id,active)=>{await api("/api/admin/users/"+id,{method:"PATCH",body:JSON.stringify({active})});await loadEditors();};
 $("editorForm").onsubmit=async e=>{e.preventDefault();try{await api("/api/admin/users",{method:"POST",body:JSON.stringify({username:$("editor_username").value,display_name:$("editor_name").value,password:$("editor_password").value})});$("editorMsg").textContent=t("created");$("editorForm").reset();await loadEditors();}catch(err){$("editorMsg").textContent=err.message;}};
-$("search").oninput=()=>{selectedId=null;$("memberDetails").classList.add("hidden");render();};$("downloadAll").onclick=()=>window.print();
+$("search").oninput=()=>{selectedId=null;$("memberDetails").classList.add("hidden");render();};
+$("downloadAll").onclick=async()=>{
+ const oldQuery=$("search").value, oldExpanded=new Set(expandedIds), oldSelected=selectedId;
+ $("search").value="";selectedId=null;expandedIds=new Set(members.map(m=>m.id));render();
+ document.body.classList.add("printing-tree");
+ const imgs=[...$("tree").querySelectorAll("img")];
+ await Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;})));
+ const cleanup=()=>{document.body.classList.remove("printing-tree");$("search").value=oldQuery;expandedIds=oldExpanded;selectedId=oldSelected;render();window.removeEventListener("afterprint",cleanup);};
+ window.addEventListener("afterprint",cleanup,{once:true});
+ window.print();
+ setTimeout(()=>{if(document.body.classList.contains("printing-tree"))cleanup();},120000);
+};
 applyLanguage();
 (async()=>{try{await loadMembers();const me=await api("/api/me");currentUser=me.user;if(currentUser)await showAdmin();}catch(e){/* public visitor */}})();
