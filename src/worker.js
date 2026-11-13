@@ -8,7 +8,7 @@ const enc = new TextEncoder();
 async function hashPassword(password, saltHex) {
   const salt = saltHex ? hexToBytes(saltHex) : crypto.getRandomValues(new Uint8Array(16));
   const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits({name:"PBKDF2", salt, iterations:210000, hash:"SHA-256"}, key, 256);
+  const bits = await crypto.subtle.deriveBits({name:"PBKDF2", salt, iterations:100000, hash:"SHA-256"}, key, 256);
   return { hash: bytesToHex(new Uint8Array(bits)), salt: bytesToHex(salt) };
 }
 function bytesToHex(bytes) { return [...bytes].map(x=>x.toString(16).padStart(2,"0")).join(""); }
