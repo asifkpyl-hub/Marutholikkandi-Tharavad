@@ -138,3 +138,10 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 .family-couple-card .person-profile .node-name{display:block;width:100%;line-height:1.25;margin-top:2px}
 .family-couple-card .person-profile .branch-line{display:block;width:100%;line-height:1.3;min-height:1em}
 .family-couple-card .person-profile .relation-line{display:block;width:100%;font-size:.72rem;line-height:1.25;color:#8a9bb0}
+
+/* Official Marutholikkandi Tharavad emblem */
+.brand-mark{width:58px;height:58px;min-width:58px;border-radius:50%;padding:3px;background:#fff;border:2px solid #d5ae43;overflow:hidden;box-shadow:0 4px 16px #003d241f}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%}
+.hero-logo{width:112px;height:112px;border:2px solid #d5ae43;background:#fff;border-radius:50%;padding:4px;overflow:hidden;box-shadow:0 8px 28px #003d2430}
+.hero-logo img{width:100%;height:100%;object-fit:contain;border-radius:50%;display:block}
+@media(max-width:640px){.topbar{height:auto;min-height:76px;padding:10px 14px;gap:9px}.brand-mark{width:48px;height:48px;min-width:48px}.brand-name{font-size:.58rem;letter-spacing:.1em}.hero-logo{width:94px;height:94px}}
