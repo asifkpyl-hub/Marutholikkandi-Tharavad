@@ -30,8 +30,8 @@ function showDetails(id){const m=members.find(x=>x.id===id);if(!m)return;const f
 window.selectMember=id=>{selectedId=id;const m=members.find(x=>x.id===id);if(m){const p=m.parent1_id||m.parent2_id;if(p)expandedIds.add(p);}render();$("memberDetails").scrollIntoView({behavior:"smooth",block:"center"});};
 async function loadMembers(){const d=await api("/api/members");members=d.members||[];render();}
 function fillParents(){
- const people=[...new Map(members.map(m=>[m.id,{label:m.full_name+" — "+(m.branch||"No branch"),name:m.full_name,branch:m.branch||""}])).values()];
- const branches=[...new Set(members.flatMap(m=>[m.branch,m.spouse_branch]).map(x=>(x||"").trim()).filter(Boolean))].sort((x,y)=>x.localeCompare(y));
+ const people=()=>[...new Map(members.map(m=>[m.id,m.full_name+" — "+(m.branch||"No branch")])).values()];
+ const branches=()=>[...new Set(members.flatMap(m=>[m.branch,m.spouse_branch]).map(x=>(x||"").trim()).filter(Boolean))].sort((x,y)=>x.localeCompare(y));
  const bindCombo=(inputId,panelId,getItems)=>{
   const input=$(inputId),panel=$(panelId);if(!input||!panel||input.dataset.comboReady)return;input.dataset.comboReady="1";
   const show=()=>{const q=input.value.trim().toLocaleLowerCase();const items=getItems().filter(x=>x.toLocaleLowerCase().includes(q)).slice(0,30);panel.innerHTML=items.map(x=>`<button type="button" class="combo-option" data-value="${esc(x)}">${esc(x)}</button>`).join("")+(q&&!items.some(x=>x.toLocaleLowerCase()===q)?`<button type="button" class="combo-option combo-add" data-value="${esc(input.value.trim())}">＋ Add “${esc(input.value.trim())}”</button>`:"");panel.classList.toggle("hidden",!panel.innerHTML);};
@@ -39,10 +39,10 @@ function fillParents(){
   panel.addEventListener("mousedown",e=>{const b=e.target.closest("[data-value]");if(!b)return;e.preventDefault();input.value=b.dataset.value;panel.classList.add("hidden");input.dispatchEvent(new Event("change",{bubbles:true}));});
   document.addEventListener("click",e=>{if(!input.parentElement.contains(e.target))panel.classList.add("hidden");});
  };
- bindCombo("father_name","fatherSuggestions",()=>people.map(x=>x.label));
- bindCombo("mother_name","motherSuggestions",()=>people.map(x=>x.label));
- bindCombo("branch","branchSuggestions",()=>branches);
- bindCombo("spouse_branch","spouseBranchSuggestions",()=>branches);
+ bindCombo("father_name","fatherSuggestions",people);
+ bindCombo("mother_name","motherSuggestions",people);
+ bindCombo("branch","branchSuggestions",branches);
+ bindCombo("spouse_branch","spouseBranchSuggestions",branches);
 }
 function resolveParent(v){const value=(v||"").trim();return members.find(m=>value===m.full_name||value===m.full_name+" — "+(m.branch||""))||null;}
 function clearForm(){$("memberForm").reset();$("memberId").value="";$("formTitle").textContent=t("newMember");$("photoPreview").classList.add("hidden");$("spousePhotoPreview").classList.add("hidden");}
