@@ -161,3 +161,5 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 .additional-spouse-row label{display:grid;gap:6px;min-width:0}
 .additional-spouse-row input{width:100%;min-width:0}
 @media(max-width:600px){.additional-spouse-row{grid-template-columns:1fr}.additional-spouse-head{align-items:flex-start}}
+
+.spouse-editor-grid input[lang="ml"],.additional-spouse-row input[lang="ml"]{margin-top:7px}
