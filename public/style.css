@@ -49,3 +49,54 @@ html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 
  .expand-toggle{display:none!important}
  .node-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
 }
+
+/* Refreshed family-tree interface: clean blue family app */
+:root{--bg:#eef4fc;--panel:#fff;--panel2:#f4f8ff;--line:#d7e4f5;--cyan:#1689e8;--gold:#ffb52e;--text:#172b48;--muted:#71839d;--glow:0 14px 40px #3978b51a}
+body{background:linear-gradient(180deg,#eaf3ff 0%,#f8fbff 46%,#edf4ff 100%);color:var(--text);font-family:Inter,"Manjari",sans-serif}
+body:before{opacity:.32;background-image:radial-gradient(#7ba9d51c 1px,transparent 1px);background-size:18px 18px;mask-image:none}
+.ambient{opacity:.1;filter:blur(110px)}.ambient-a{background:#37a5ff}.ambient-b{background:#ffc75b}
+.hero{background:linear-gradient(125deg,#167bd2,#38a8f1 58%,#6fc6ff);border:0;color:#fff;min-height:350px}
+.hero:after{content:"";position:absolute;width:430px;height:430px;border:1px solid #ffffff33;border-radius:50%;right:-100px;top:-230px;box-shadow:0 0 0 35px #ffffff0c,0 0 0 75px #ffffff0a}
+.hero-grid{background:radial-gradient(circle at 85% 35%,#ffffff2b 0 2px,transparent 3px);background-size:24px 24px;opacity:.45}
+.brand-mark{background:#ffffff25;border:1px solid #ffffff55;color:#fff}.brand-name,.hero .eyebrow,.hero .sub{color:#eaf6ff}
+.hero h1,.hero h1 em{color:#fff}.hero h1 em{font-style:normal}.orbital{border-color:#ffffff70;color:#fff}
+.gold{background:linear-gradient(135deg,#ffc64d,#ff9f22)!important;color:#173b64!important;box-shadow:0 8px 24px #155e9e2b}
+.text-link,.nav-admin{color:#fff;border-color:#ffffff8c}.nav-admin{background:#ffffff1c}
+.wrap{max-width:1320px}.intro-row h2{color:#183a65}.intro-row .eyebrow{color:#2588d7}.tree-stat{background:#fff;border:1px solid #d9e7f7;box-shadow:0 8px 28px #3778b512;border-radius:18px}
+.toolbar{background:#fff;border:1px solid #dce8f6;border-radius:20px;box-shadow:0 10px 28px #3778b510;padding:14px}.search-wrap{background:#f3f8ff;border:1px solid #d7e6f7;border-radius:14px}.search-wrap input{color:#183452}.tree-note,.muted{color:#71839d}
+.family-network{gap:32px;padding:18px 0 46px}
+.tree-branch{min-width:0}
+.tree-node.family-couple-card{width:min(100%,430px);min-width:290px;padding:15px;border:1px solid #d8e6f5;border-radius:22px;background:#fff;color:#183452;box-shadow:0 12px 34px #2b69a51a;position:relative;overflow:hidden}
+.tree-node.family-couple-card:before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,#167bd2,#5bbcff,#ffc24a)}
+.tree-node.family-couple-card.selected{border-color:#2999f0;box-shadow:0 0 0 3px #2999f022,0 18px 40px #2b69a526}
+.couple-profiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
+.person-profile{display:flex;min-width:0;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;padding:10px 7px;border-radius:15px;background:#f4f8fe;border:1px solid #e1ebf7;color:#183452;text-align:center}
+.person-profile:hover{background:#eaf4ff}
+.person-profile .node-avatar{width:68px;height:68px;min-width:68px;border-radius:50%;margin:0 auto 3px;background:linear-gradient(135deg,#bce5ff,#d7eaff);border:3px solid #fff;box-shadow:0 3px 12px #347db52b;overflow:hidden;display:grid;place-items:center;color:#1478c8;font-weight:800;font-size:1.35rem}
+.person-profile .node-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.person-profile .node-name{font-size:.94rem;font-weight:800;color:#183b65;overflow-wrap:anywhere;line-height:1.25}
+.person-profile .node-meta{font-size:.72rem;line-height:1.4;color:#7387a2;overflow-wrap:anywhere}
+.spouse-empty{justify-content:center;border-style:dashed;background:#f8fbff}.spouse-placeholder{width:52px;height:52px;border:1px dashed #a8c5e4;border-radius:50%;display:grid;place-items:center;color:#398fd6;font-size:1.5rem}
+.couple-card-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid #e7eef8}
+.expand-toggle{margin:0!important;background:#eaf4ff!important;color:#167bd2!important;border:1px solid #c9e2fb!important;padding:8px 13px!important;font-size:.78rem!important}
+.details-toggle{background:transparent;color:#4f789f;padding:8px 9px;font-size:.75rem}
+.tree-children{border-color:#8bbde9;gap:22px;padding-top:30px;margin-top:14px}
+.tree-children:before,.tree-children>.tree-branch:before{border-color:#8bbde9}
+.detail-panel,.admin{background:#fff;color:#183452;border:1px solid #d9e7f6;box-shadow:0 16px 44px #3679b51a}
+.profile-person{background:#f2f7ff;border-color:#dce9f8;color:#183452}.spouse-person{background:#fff5fa;border-color:#f3d5e4}.detail-item{background:#f5f9ff;border-color:#e0eaf6}.detail-item small,.detail-bio{color:#71839d}
+.form-grid{background:#f5f9ff}.spouse-editor{background:#f7faff;border-color:#dce8f6}.spouse-editor h4{color:#286fae}
+input,select,textarea{background:#fff;color:#183452;border-color:#d3e1f0}.combo-options{background:#fff;border-color:#b8d8f5;box-shadow:0 16px 36px #255b8a20}.combo-option{color:#183452}.combo-option:hover,.combo-option:focus{background:#eaf4ff}
+footer{color:#7086a2;border-color:#dbe7f4}
+@media(max-width:640px){.family-network{gap:24px}.tree-node.family-couple-card{width:min(92vw,390px);min-width:0;padding:12px}.person-profile{padding:9px 5px}.person-profile .node-avatar{width:58px;height:58px;min-width:58px}.person-profile .node-name{font-size:.82rem}.person-profile .node-meta{font-size:.66rem}.tree-children{gap:12px}.tree-children>.tree-branch{width:100%;min-width:0}}
+@media print{
+ @page{size:A3 landscape;margin:8mm}
+ body{background:#fff!important;color:#172b48!important}
+ .tree-node.family-couple-card{width:82mm!important;min-width:82mm!important;padding:3mm!important;border:1px solid #aaa!important;box-shadow:none!important}
+ .couple-profiles{grid-template-columns:1fr 1fr!important;gap:2mm!important}
+ .person-profile{background:#fff!important;border:0!important;padding:1mm!important}
+ .person-profile .node-avatar{width:20mm!important;height:20mm!important;min-width:20mm!important}
+ .person-profile .node-name{font-size:9pt!important;color:#111!important}
+ .person-profile .node-meta{font-size:7pt!important;color:#444!important}
+ .couple-card-actions{display:none!important}
+ .tree-children{flex-wrap:wrap!important}
+}
