@@ -9,7 +9,7 @@ function applyLanguage(){document.documentElement.lang=language;const gender=$("
 $("languageSelect").onchange=e=>{language=e.target.value;localStorage.setItem("mt_lang",language);applyLanguage();};
 async function api(path,opts={}){const res=await fetch(path,{credentials:"same-origin",...opts,headers:{"content-type":"application/json",...(opts.headers||{})}});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error((data.error||"Request failed")+" [HTTP "+res.status+(data.requestId?", ID "+data.requestId:"")+"]");return data;}
 function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function childrenOf(id){return members.filter(m=>m.parent1_id===id||m.parent2_id===id);}
+function childrenOf(id){return members.filter(m=>m.parent1_id===id||(!m.parent1_id&&m.parent2_id===id));}
 function node(m){
  const kids=childrenOf(m.id),expanded=expandedIds.has(m.id);
  const relation=m.gender==="പുരുഷൻ"?(language==="en"?"Son":"മകൻ"):m.gender==="സ്ത്രീ"?(language==="en"?"Daughter":"മകൾ"):"";
@@ -39,7 +39,7 @@ $("clearForm").onclick=()=>{clearForm();};
 $("adminOpen").onclick=()=>{if(currentUser){$("adminPanel").classList.toggle("hidden");$("adminPanel").scrollIntoView({behavior:"smooth"});}else $("loginDialog").showModal();};
 $("closeLogin").onclick=()=>$("loginDialog").close();
 $("loginForm").onsubmit=async e=>{e.preventDefault();try{const d=await api("/api/login",{method:"POST",body:JSON.stringify({username:$("loginUser").value,password:$("loginPass").value})});const check=await api("/api/me");if(!check.user)throw new Error("Login cookie was not accepted by the Worker.");currentUser=check.user;$("loginDialog").close();await showAdmin();}catch(err){$("loginMsg").textContent=err.message;}};
-async function showAdmin(){$("adminPanel").classList.remove("hidden");$("who").textContent=`${currentUser.display_name} · ${currentUser.role}`;$("adminOpen").textContent=t("adminPanel");await loadMembers();if(currentUser.role==="admin")await loadEditors();else document.querySelector('[data-tab="editors"]').classList.add("hidden");$("adminPanel").scrollIntoView({behavior:"smooth"});}
+async function showAdmin(){$("adminPanel").classList.remove("hidden");$("who").textContent=`${currentUser.display_name} · ${currentUser.role}`;$("adminOpen").textContent=t("adminPanel");$("memberForm").classList.toggle("hidden",currentUser.role!=="admin");await loadMembers();if(currentUser.role==="admin")await loadEditors();else document.querySelector('[data-tab="editors"]').classList.add("hidden");$("adminPanel").scrollIntoView({behavior:"smooth"});}
 $("logout").onclick=async()=>{await api("/api/logout",{method:"POST"});currentUser=null;$("adminPanel").classList.add("hidden");$("adminOpen").textContent=t("adminLogin");await loadMembers();};
 document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{activeTab=b.dataset.tab;document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));$("membersTab").classList.toggle("hidden",activeTab!=="members");$("editorsTabPanel").classList.toggle("hidden",activeTab!=="editors");});
 async function loadEditors(){const d=await api("/api/admin/users");$("editorList").innerHTML=d.users.map(u=>`<div class="admin-row"><span>${esc(u.display_name)} · ${esc(u.username)} · ${u.role} · ${u.active?"Active":"Disabled"}</span>${u.role==="editor"?`<button class="outline" onclick="toggleEditor('${u.id}',${u.active?0:1})">${u.active?"Disable":"Enable"}</button>`:""}</div>`).join("");}
