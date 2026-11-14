@@ -29,3 +29,23 @@ html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 
 .couple-row{display:flex;align-items:center;justify-content:center;gap:8px}.spouse-chip{min-width:92px;max-width:150px;padding:10px 12px;border:1px solid #d58ca8;border-radius:15px;background:linear-gradient(145deg,#512e4c,#26344b);text-align:center;box-shadow:0 10px 25px #0003;display:flex;flex-direction:column;gap:4px}.spouse-chip strong{font-size:.78rem;overflow-wrap:anywhere}.spouse-chip small{font-size:.65rem;color:#f0bfd0}.form-grid input[list]{border-color:#58b8ac}.tree-branch{animation:nodeIn .45s both}.tree-children{animation:branchOpen .35s ease-out}@keyframes branchOpen{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}@media(max-width:640px){.couple-row{gap:5px}.spouse-chip{min-width:70px;padding:8px 5px}.spouse-chip strong{font-size:.68rem}}
 
 .spouse-editor{border:1px solid #b8799b55;background:linear-gradient(135deg,#261e35,#102b36);border-radius:16px;padding:16px}.spouse-editor h4{margin:0 0 14px;color:#f1c1d5}.spouse-editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.spouse-editor-grid label{min-width:0}.profile-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}.profile-person{display:flex;align-items:center;gap:16px;padding:16px;border-radius:16px;background:linear-gradient(140deg,#123c43,#172b43);border:1px solid #58cabb55;min-width:0}.spouse-person{background:linear-gradient(140deg,#492b49,#29334c);border-color:#e79cbd66}.profile-person h3{overflow-wrap:anywhere}.profile-person .detail-avatar{flex:0 0 88px}.spouse-chip img{width:48px;height:48px;border-radius:50%;object-fit:cover;margin:0 auto 4px;border:1px solid #f0bfd0}.spouse-chip{align-self:center}.spouse-editor-grid .photo-preview{width:76px;height:76px}@media(max-width:640px){.spouse-editor-grid,.profile-pair{grid-template-columns:1fr}.profile-person{padding:12px}.profile-person .detail-avatar{width:68px;height:68px;flex-basis:68px}}
+
+/* Searchable member and family-branch dropdowns */
+.combo-wrap{position:relative;width:100%}.combo-wrap>input{width:100%}.combo-options{position:absolute;z-index:30;top:calc(100% + 5px);left:0;right:0;max-height:230px;overflow:auto;padding:6px;border:1px solid #58b8ac;border-radius:12px;background:#09232c;box-shadow:0 16px 36px #0008}.combo-option{display:block;width:100%;padding:11px 12px;text-align:left;border-radius:8px;background:transparent;color:#eaf7f4;font-size:.9rem;font-weight:500}.combo-option:hover,.combo-option:focus{background:#1b5055}.combo-add{color:#e4c17a;border-top:1px solid #ffffff1a;margin-top:4px}
+.couple-row{gap:12px;align-items:stretch}.spouse-tree-node{flex:0 0 190px;display:flex;flex-direction:column;justify-content:center;align-items:center}.spouse-tree-node .node-avatar{margin:0 auto 8px}.spouse-tree-node .node-meta{overflow-wrap:anywhere;max-width:100%}
+@media print{
+ @page{size:A3 landscape;margin:8mm}
+ html,body{width:auto!important;height:auto!important;overflow:visible!important;background:#fff!important}
+ .family-network{justify-content:flex-start!important;align-items:flex-start!important;flex-wrap:wrap!important;gap:8mm!important}
+ .tree-branch{break-inside:avoid!important;page-break-inside:avoid!important}
+ .couple-row{display:flex!important;align-items:stretch!important;justify-content:center!important;gap:3mm!important;break-inside:avoid!important}
+ .tree-node,.spouse-tree-node{width:42mm!important;min-width:42mm!important;max-width:42mm!important;min-height:0!important;padding:3mm 2mm!important;border:0.7pt solid #777!important;border-radius:3mm!important;background:#fff!important;color:#111!important;box-shadow:none!important;break-inside:avoid!important}
+ .spouse-tree-node .node-avatar,.tree-node .node-avatar{width:20mm!important;height:20mm!important;margin:0 auto 2mm!important}
+ .spouse-tree-node .node-name,.tree-node .node-name{font-size:10pt!important;color:#111!important}
+ .spouse-tree-node .node-meta,.tree-node .node-meta{font-size:8pt!important;color:#333!important}
+ .tree-children{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:flex-start!important;gap:5mm!important;border-top:1pt solid #333!important;padding-top:6mm!important;margin-top:3mm!important;break-inside:auto!important}
+ .tree-children:before,.tree-children>.tree-branch:before{border-color:#333!important}
+ .tree-children>.tree-branch{flex:0 1 auto!important;width:auto!important;min-width:0!important}
+ .expand-toggle{display:none!important}
+ .node-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+}
