@@ -41,7 +41,22 @@ function showDetails(id){const m=members.find(x=>x.id===id);if(!m)return;const f
 window.selectMember=id=>{selectedId=id;const m=members.find(x=>x.id===id);if(m){const p=m.parent1_id||m.parent2_id;if(p)expandedIds.add(p);}render();$("memberDetails").scrollIntoView({behavior:"smooth",block:"center"});};
 async function loadMembers(){const d=await api("/api/members");members=d.members||[];render();}
 function fillParents(){
- const people=()=>members.map(m=>({id:m.id,label:displayName(m)+" — "+(displayBranch(m)||"")}));
+ const people=()=>{
+  const entries=[];
+  const add=(id,name,mlName,branch,mlBranch)=>{
+   const shownName=language==="ml"?(mlName||name):(name||mlName);
+   const shownBranch=language==="ml"?(mlBranch||branch):(branch||mlBranch);
+   if(!shownName)return;
+   entries.push({id:id||"",label:shownName+(shownBranch?" — "+shownBranch:"")});
+  };
+  members.forEach(m=>{
+   add(m.id,m.full_name,m.ml_full_name,m.branch,m.ml_branch);
+   add("",m.spouse_name,m.spouse_ml_name,m.spouse_branch,m.spouse_ml_branch);
+   (m.additional_spouses||[]).forEach(sp=>add("",sp.name,sp.ml_name,sp.branch,sp.ml_branch));
+  });
+  const seen=new Set();
+  return entries.filter(x=>{const k=x.label.toLocaleLowerCase();if(seen.has(k))return false;seen.add(k);return true;});
+ };
  const branches=()=>[...new Set(members.flatMap(m=>[displayBranch(m),m.spouse_branch]).map(x=>(x||"").trim()).filter(Boolean))].sort((x,y)=>x.localeCompare(y));
  const bindCombo=(inputId,panelId,getItems)=>{
   const input=$(inputId),panel=$(panelId);if(!input||!panel||input.dataset.comboReady)return;input.dataset.comboReady="1";
