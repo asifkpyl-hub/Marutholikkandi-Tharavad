@@ -117,7 +117,7 @@ async function api(req, env, url) {
     return json({members:(rows.results||[]).map(safeMember)});
   }
   if (path === "/api/members" && req.method === "POST") {
-    const user = await auth(req,env); if (!user || user.role!=="admin") return json({error:"Administrator access required"},403);
+    const user = await auth(req,env); if (!user || !["admin","editor"].includes(user.role)) return json({error:"Authorised editor access required"},403);
     const b = await body(req);
     if (!(b.full_name||"").trim() || !(b.gender||"").trim() || !(b.father_name||"").trim() || !(b.mother_name||"").trim() || !(b.branch||"").trim()) return json({error:"Name, gender, father name, mother name and family branch are required."},400);
     const id=uuid();
@@ -125,14 +125,14 @@ async function api(req, env, url) {
       (id,full_name,ml_full_name,gender,birth_date,death_date,parent1_id,parent2_id,father_name,mother_name,spouse_name,spouse_ml_name,spouse_ml_branch,spouse_photo_url,spouse_branch,spouse_list_json,biography,photo_url,branch,ml_branch,is_public,created_by)
       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .bind(id,b.full_name.trim(),b.ml_full_name||"",b.gender||"",b.birth_date||"",b.death_date||"",b.parent1_id||null,b.parent2_id||null,b.father_name||"",b.mother_name||"",
-        b.spouse_name||"",b.spouse_ml_name||"",b.spouse_ml_branch||"",b.spouse_photo_url||"",b.spouse_branch||"",JSON.stringify(Array.isArray(b.additional_spouses)?b.additional_spouses:[]),b.biography||"",b.photo_url||"",b.branch||"",b.ml_branch||"",user.role==="admin"?(b.is_public===false?0:1):0,user.id).run();
+        b.spouse_name||"",b.spouse_ml_name||"",b.spouse_ml_branch||"",b.spouse_photo_url||"",b.spouse_branch||"",JSON.stringify(Array.isArray(b.additional_spouses)?b.additional_spouses:[]),b.biography||"",b.photo_url||"",b.branch||"",b.ml_branch||"",b.is_public===false?0:1,user.id).run();
     await audit(env,user,"member_created",id);
     return json({ok:true,id},201);
   }
   const memberMatch = path.match(/^\/api\/members\/([0-9a-f-]+)$/i);
   if (memberMatch && req.method === "PUT") {
     const user=await auth(req,env); if(!user) return json({error:"Sign in required"},401);
-    if(user.role!=="admin") return json({error:"Only administrators can edit family records."},403);
+    if(!["admin","editor"].includes(user.role)) return json({error:"Authorised editor access required."},403);
     const id=memberMatch[1], b=await body(req);
     if (!(b.full_name||"").trim() || !(b.gender||"").trim() || !(b.father_name||"").trim() || !(b.mother_name||"").trim() || !(b.branch||"").trim()) return json({error:"Name, gender, father name, mother name and family branch are required."},400);
     const existing=await env.FAMILY_DB.prepare("SELECT id FROM family_members WHERE id=?").bind(id).first();
