@@ -163,3 +163,50 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 @media(max-width:600px){.additional-spouse-row{grid-template-columns:1fr}.additional-spouse-head{align-items:flex-start}}
 
 .spouse-editor-grid input[lang="ml"],.additional-spouse-row input[lang="ml"]{margin-top:7px}
+
+/* Family-tree navigation canvas: independently scroll in both directions */
+#tree{position:relative;max-width:100%;max-height:min(78vh,900px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#3995c6 #e8f1fb;border:1px solid #d9e8f7;border-radius:20px;background:linear-gradient(145deg,#f8fbff,#eef5ff);padding:14px;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+#tree .family-network{width:max-content;min-width:100%;max-width:none;justify-content:flex-start;flex-wrap:nowrap;align-items:flex-start}
+#tree .tree-branch{flex:0 0 auto}
+#tree .tree-children{flex-wrap:nowrap}
+.tree-pan-controls{display:flex;gap:6px;align-items:center;flex:0 0 auto}
+.tree-pan-controls button{width:38px;height:38px;border:1px solid #b8d2ed;border-radius:11px;background:#fff;color:#176aa8;font-size:1.1rem;font-weight:800;box-shadow:0 3px 10px #164a7810}
+.tree-pan-controls button:active{transform:scale(.96);background:#e7f3ff}
+@media(max-width:640px){
+ #tree{max-height:68vh;padding:10px;border-radius:16px}
+ #tree .family-network{width:max-content;min-width:max-content;flex-direction:row;align-items:flex-start}
+ #tree .tree-branch{width:auto;min-width:190px}
+ #tree .tree-children{width:max-content;gap:12px}
+ #tree .tree-children>.tree-branch{width:auto;min-width:190px}
+ .toolbar{gap:8px}
+ .tree-pan-controls{width:100%;justify-content:flex-end}
+ .tree-pan-controls button{flex:1;max-width:52px}
+}
+@page{size:A3 landscape;margin:10mm}
+@media print{
+ html,body{width:auto!important;height:auto!important;overflow:visible!important;background:#fff!important;color:#111!important}
+ body.printing-tree .hero{display:block!important;min-height:0!important;background:#fff!important;color:#111!important}
+ body.printing-tree .hero-content{padding:0 0 5mm!important}
+ body.printing-tree .hero h1{font-size:22pt!important;color:#142f4b!important;margin:0!important}
+ body.printing-tree .hero em{color:#142f4b!important}
+ body.printing-tree .hero .orbital,body.printing-tree .hero .eyebrow,body.printing-tree .hero .sub,body.printing-tree .hero-grid,
+ body.printing-tree .topbar,body.printing-tree .hero-actions,body.printing-tree .toolbar,body.printing-tree .intro-row,
+ body.printing-tree #memberDetails,body.printing-tree #adminPanel,body.printing-tree footer{display:none!important}
+ body.printing-tree .wrap{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+ body.printing-tree #tree{display:block!important;position:static!important;width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;overflow:visible!important;padding:0!important;margin:0!important;border:0!important;background:#fff!important}
+ body.printing-tree #tree .family-network{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:5mm!important;width:100%!important;min-width:0!important;max-width:none!important;flex-wrap:nowrap!important;padding:0!important}
+ body.printing-tree #tree .tree-branch{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;min-width:0!important;max-width:none!important;break-inside:auto!important;page-break-inside:auto!important}
+ body.printing-tree #tree .tree-children{display:flex!important;flex-flow:row wrap!important;justify-content:center!important;align-items:flex-start!important;gap:5mm!important;width:100%!important;min-width:0!important;max-width:none!important;padding:6mm 0 0!important;margin:3mm 0 0!important;border-top:1pt solid #52677d!important}
+ body.printing-tree #tree .tree-children:before,body.printing-tree #tree .tree-children>.tree-branch:before{border-color:#52677d!important}
+ body.printing-tree #tree .tree-children>.tree-branch{width:48%!important;min-width:0!important;max-width:48%!important}
+ body.printing-tree #tree .tree-node{display:block!important;width:52mm!important;min-width:52mm!important;max-width:52mm!important;min-height:0!important;padding:3mm!important;margin:0 auto!important;background:#fff!important;color:#172b45!important;border:1px solid #9aafc4!important;border-radius:3mm!important;box-shadow:none!important;transform:none!important;animation:none!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ body.printing-tree #tree .tree-node:after{display:none!important}
+ body.printing-tree #tree .couple-profiles{display:grid!important;grid-template-columns:1fr 1fr!important;gap:2mm!important}
+ body.printing-tree #tree .person-profile{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:1mm!important;background:#f4f8fc!important;border:1px solid #d9e4ef!important;border-radius:2mm!important;padding:2mm!important;color:#172b45!important;min-width:0!important}
+ body.printing-tree #tree .node-avatar{width:15mm!important;height:15mm!important;min-width:15mm!important;margin:0 auto 1mm!important;background:#e8eef5!important;color:#172b45!important;border:1px solid #c2d0de!important}
+ body.printing-tree #tree .node-avatar img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important}
+ body.printing-tree #tree .node-name{font-size:8pt!important;line-height:1.2!important;color:#172b45!important;overflow-wrap:anywhere!important}
+ body.printing-tree #tree .node-meta{font-size:6.5pt!important;line-height:1.2!important;color:#50647a!important}
+ body.printing-tree #tree .couple-card-actions{display:none!important}
+ body.printing-tree #tree .tree-children .tree-node{width:48mm!important;min-width:48mm!important;max-width:48mm!important}
+}
