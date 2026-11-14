@@ -53,7 +53,7 @@ async function body(req) { try { return await req.json(); } catch { return {}; }
 function safeMember(m) {
   return {id:m.id, full_name:m.full_name, gender:m.gender, birth_date:m.birth_date,
     death_date:m.death_date, ml_full_name:m.ml_full_name||"", ml_branch:m.ml_branch||"", parent1_id:m.parent1_id, parent2_id:m.parent2_id, father_name:m.father_name||'', mother_name:m.mother_name||'',
-    spouse_name:m.spouse_name, spouse_photo_url:m.spouse_photo_url||"", spouse_branch:m.spouse_branch||"", additional_spouses:(()=>{try{return JSON.parse(m.spouse_list_json||"[]")}catch{return []}})(), biography:m.biography, photo_url:m.photo_url,
+    spouse_name:m.spouse_name, spouse_ml_name:m.spouse_ml_name||"", spouse_ml_branch:m.spouse_ml_branch||"", spouse_photo_url:m.spouse_photo_url||"", spouse_branch:m.spouse_branch||"", additional_spouses:(()=>{try{return JSON.parse(m.spouse_list_json||"[]")}catch{return []}})(), biography:m.biography, photo_url:m.photo_url,
     branch:m.branch, is_public:!!m.is_public};
 }
 async function audit(env, user, action, memberId=null) {
@@ -122,10 +122,10 @@ async function api(req, env, url) {
     if (!(b.full_name||"").trim() || !(b.gender||"").trim() || !(b.father_name||"").trim() || !(b.mother_name||"").trim() || !(b.branch||"").trim()) return json({error:"Name, gender, father name, mother name and family branch are required."},400);
     const id=uuid();
     await env.FAMILY_DB.prepare(`INSERT INTO family_members
-      (id,full_name,ml_full_name,gender,birth_date,death_date,parent1_id,parent2_id,father_name,mother_name,spouse_name,spouse_photo_url,spouse_branch,spouse_list_json,biography,photo_url,branch,ml_branch,is_public,created_by)
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      (id,full_name,ml_full_name,gender,birth_date,death_date,parent1_id,parent2_id,father_name,mother_name,spouse_name,spouse_ml_name,spouse_ml_branch,spouse_photo_url,spouse_branch,spouse_list_json,biography,photo_url,branch,ml_branch,is_public,created_by)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .bind(id,b.full_name.trim(),b.ml_full_name||"",b.gender||"",b.birth_date||"",b.death_date||"",b.parent1_id||null,b.parent2_id||null,b.father_name||"",b.mother_name||"",
-        b.spouse_name||"",b.spouse_photo_url||"",b.spouse_branch||"",JSON.stringify(Array.isArray(b.additional_spouses)?b.additional_spouses:[]),b.biography||"",b.photo_url||"",b.branch||"",b.ml_branch||"",user.role==="admin"?(b.is_public===false?0:1):0,user.id).run();
+        b.spouse_name||"",b.spouse_ml_name||"",b.spouse_ml_branch||"",b.spouse_photo_url||"",b.spouse_branch||"",JSON.stringify(Array.isArray(b.additional_spouses)?b.additional_spouses:[]),b.biography||"",b.photo_url||"",b.branch||"",b.ml_branch||"",user.role==="admin"?(b.is_public===false?0:1):0,user.id).run();
     await audit(env,user,"member_created",id);
     return json({ok:true,id},201);
   }
@@ -138,9 +138,9 @@ async function api(req, env, url) {
     const existing=await env.FAMILY_DB.prepare("SELECT id FROM family_members WHERE id=?").bind(id).first();
     if(!existing) return json({error:"Member not found"},404);
     await env.FAMILY_DB.prepare(`UPDATE family_members SET full_name=?,ml_full_name=?,gender=?,birth_date=?,death_date=?,parent1_id=?,parent2_id=?,father_name=?,mother_name=?,
-      spouse_name=?,spouse_photo_url=?,spouse_branch=?,spouse_list_json=?,biography=?,photo_url=?,branch=?,ml_branch=?,is_public=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`)
+      spouse_name=?,spouse_ml_name=?,spouse_ml_branch=?,spouse_photo_url=?,spouse_branch=?,spouse_list_json=?,biography=?,photo_url=?,branch=?,ml_branch=?,is_public=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`)
       .bind(b.full_name.trim(),b.ml_full_name||"",b.gender||"",b.birth_date||"",b.death_date||"",b.parent1_id||null,b.parent2_id||null,b.father_name||"",b.mother_name||"",
-        b.spouse_name||"",b.spouse_photo_url||"",b.spouse_branch||"",JSON.stringify(Array.isArray(b.additional_spouses)?b.additional_spouses:[]),b.biography||"",b.photo_url||"",b.branch||"",b.ml_branch||"",b.is_public===false?0:1,id).run();
+        b.spouse_name||"",b.spouse_ml_name||"",b.spouse_ml_branch||"",b.spouse_photo_url||"",b.spouse_branch||"",JSON.stringify(Array.isArray(b.additional_spouses)?b.additional_spouses:[]),b.biography||"",b.photo_url||"",b.branch||"",b.ml_branch||"",b.is_public===false?0:1,id).run();
     await audit(env,user,"member_updated",id); return json({ok:true});
   }
   if (memberMatch && req.method === "DELETE") {
