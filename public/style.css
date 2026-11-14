@@ -26,3 +26,4 @@ html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 
  .expand-toggle{display:none!important}
  .tree-children>.tree-branch{flex:0 0 auto!important}
 }
+.couple-row{display:flex;align-items:center;justify-content:center;gap:8px}.spouse-chip{min-width:92px;max-width:150px;padding:10px 12px;border:1px solid #d58ca8;border-radius:15px;background:linear-gradient(145deg,#512e4c,#26344b);text-align:center;box-shadow:0 10px 25px #0003;display:flex;flex-direction:column;gap:4px}.spouse-chip strong{font-size:.78rem;overflow-wrap:anywhere}.spouse-chip small{font-size:.65rem;color:#f0bfd0}.form-grid input[list]{border-color:#58b8ac}.tree-branch{animation:nodeIn .45s both}.tree-children{animation:branchOpen .35s ease-out}@keyframes branchOpen{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}@media(max-width:640px){.couple-row{gap:5px}.spouse-chip{min-width:70px;padding:8px 5px}.spouse-chip strong{font-size:.68rem}}
