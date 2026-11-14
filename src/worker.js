@@ -134,7 +134,7 @@ async function api(req, env, url) {
     const user=await auth(req,env); if(!user) return json({error:"Sign in required"},401);
     if(user.role!=="admin") return json({error:"Only administrators can edit family records."},403);
     const id=memberMatch[1], b=await body(req);
-    if (!(b.full_name||"").trim()) return json({error:"Name is required"},400);
+    if (!(b.full_name||"").trim() || !(b.gender||"").trim() || !(b.father_name||"").trim() || !(b.mother_name||"").trim() || !(b.branch||"").trim()) return json({error:"Name, gender, father name, mother name and family branch are required."},400);
     const existing=await env.FAMILY_DB.prepare("SELECT id FROM family_members WHERE id=?").bind(id).first();
     if(!existing) return json({error:"Member not found"},404);
     await env.FAMILY_DB.prepare(`UPDATE family_members SET full_name=?,gender=?,birth_date=?,death_date=?,parent1_id=?,parent2_id=?,father_name=?,mother_name=?,
