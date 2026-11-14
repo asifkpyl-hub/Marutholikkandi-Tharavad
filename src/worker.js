@@ -52,7 +52,7 @@ function sessionCookie(token, maxAge=28800) {
 async function body(req) { try { return await req.json(); } catch { return {}; } }
 function safeMember(m) {
   return {id:m.id, full_name:m.full_name, gender:m.gender, birth_date:m.birth_date,
-    death_date:m.death_date, parent1_id:m.parent1_id, parent2_id:m.parent2_id,
+    death_date:m.death_date, parent1_id:m.parent1_id, parent2_id:m.parent2_id, father_name:m.father_name||'', mother_name:m.mother_name||'',
     spouse_name:m.spouse_name, biography:m.biography, photo_url:m.photo_url,
     branch:m.branch, is_public:!!m.is_public};
 }
@@ -117,14 +117,14 @@ async function api(req, env, url) {
     return json({members:(rows.results||[]).map(safeMember)});
   }
   if (path === "/api/members" && req.method === "POST") {
-    const user = await auth(req,env); if (!user) return json({error:"Sign in required"},401);
+    const user = await auth(req,env); if (!user || user.role!=="admin") return json({error:"Administrator access required"},403);
     const b = await body(req);
-    if (!(b.full_name||"").trim()) return json({error:"Name is required"},400);
+    if (!(b.full_name||"").trim() || !(b.gender||"").trim() || !(b.father_name||"").trim() || !(b.mother_name||"").trim() || !(b.branch||"").trim()) return json({error:"Name, gender, father name, mother name and family branch are required."},400);
     const id=uuid();
     await env.FAMILY_DB.prepare(`INSERT INTO family_members
-      (id,full_name,gender,birth_date,death_date,parent1_id,parent2_id,spouse_name,biography,photo_url,branch,is_public,created_by)
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-      .bind(id,b.full_name.trim(),b.gender||"",b.birth_date||"",b.death_date||"",b.parent1_id||null,b.parent2_id||null,
+      (id,full_name,gender,birth_date,death_date,parent1_id,parent2_id,father_name,mother_name,spouse_name,biography,photo_url,branch,is_public,created_by)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      .bind(id,b.full_name.trim(),b.gender||"",b.birth_date||"",b.death_date||"",b.parent1_id||null,b.parent2_id||null,b.father_name||"",b.mother_name||"",
         b.spouse_name||"",b.biography||"",b.photo_url||"",b.branch||"",user.role==="admin"?(b.is_public===false?0:1):0,user.id).run();
     await audit(env,user,"member_created",id);
     return json({ok:true,id},201);
@@ -132,14 +132,15 @@ async function api(req, env, url) {
   const memberMatch = path.match(/^\/api\/members\/([0-9a-f-]+)$/i);
   if (memberMatch && req.method === "PUT") {
     const user=await auth(req,env); if(!user) return json({error:"Sign in required"},401);
+    if(user.role!=="admin") return json({error:"Only administrators can edit family records."},403);
     const id=memberMatch[1], b=await body(req);
     if (!(b.full_name||"").trim()) return json({error:"Name is required"},400);
     const existing=await env.FAMILY_DB.prepare("SELECT id FROM family_members WHERE id=?").bind(id).first();
     if(!existing) return json({error:"Member not found"},404);
-    await env.FAMILY_DB.prepare(`UPDATE family_members SET full_name=?,gender=?,birth_date=?,death_date=?,parent1_id=?,parent2_id=?,
+    await env.FAMILY_DB.prepare(`UPDATE family_members SET full_name=?,gender=?,birth_date=?,death_date=?,parent1_id=?,parent2_id=?,father_name=?,mother_name=?,
       spouse_name=?,biography=?,photo_url=?,branch=?,is_public=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`)
-      .bind(b.full_name.trim(),b.gender||"",b.birth_date||"",b.death_date||"",b.parent1_id||null,b.parent2_id||null,
-        b.spouse_name||"",b.biography||"",b.photo_url||"",b.branch||"",user.role==="admin"?(b.is_public===false?0:1):0,id).run();
+      .bind(b.full_name.trim(),b.gender||"",b.birth_date||"",b.death_date||"",b.parent1_id||null,b.parent2_id||null,b.father_name||"",b.mother_name||"",
+        b.spouse_name||"",b.biography||"",b.photo_url||"",b.branch||"",b.is_public===false?0:1,id).run();
     await audit(env,user,"member_updated",id); return json({ok:true});
   }
   if (memberMatch && req.method === "DELETE") {
