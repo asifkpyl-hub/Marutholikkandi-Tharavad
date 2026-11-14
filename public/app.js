@@ -91,6 +91,12 @@ async function loadEditors(){const d=await api("/api/admin/users");$("editorList
 window.toggleEditor=async(id,active)=>{await api("/api/admin/users/"+id,{method:"PATCH",body:JSON.stringify({active})});await loadEditors();};
 $("editorForm").onsubmit=async e=>{e.preventDefault();try{await api("/api/admin/users",{method:"POST",body:JSON.stringify({username:$("editor_username").value,display_name:$("editor_name").value,password:$("editor_password").value})});$("editorMsg").textContent=t("created");$("editorForm").reset();await loadEditors();}catch(err){$("editorMsg").textContent=err.message;}};
 document.querySelectorAll("[data-pan]").forEach(btn=>btn.addEventListener("click",()=>{const tree=$("tree");const dir=btn.dataset.pan;tree.scrollBy({left:dir==="left"?-Math.max(240,tree.clientWidth*.7):dir==="right"?Math.max(240,tree.clientWidth*.7):0,top:dir==="up"?-Math.max(220,tree.clientHeight*.7):dir==="down"?Math.max(220,tree.clientHeight*.7):0,behavior:"smooth"});}));
+let familyTreeZoom=1;
+function applyTreeZoom(){const tree=$("tree");if(!tree)return;tree.style.zoom=String(familyTreeZoom);$("treeZoomLevel").textContent=Math.round(familyTreeZoom*100)+"%";}
+$("treeZoomIn").addEventListener("click",()=>{familyTreeZoom=Math.min(2,familyTreeZoom+.1);applyTreeZoom();});
+$("treeZoomOut").addEventListener("click",()=>{familyTreeZoom=Math.max(.4,familyTreeZoom-.1);applyTreeZoom();});
+$("treeZoomReset").addEventListener("click",()=>{familyTreeZoom=1;applyTreeZoom();});
+
 $("search").oninput=()=>{selectedId=null;$("memberDetails").classList.add("hidden");render();};
 $("downloadAll").onclick=async()=>{
  const oldQuery=$("search").value, oldExpanded=new Set(expandedIds), oldSelected=selectedId;
