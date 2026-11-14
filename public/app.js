@@ -97,7 +97,7 @@ $("downloadAll").onclick=async()=>{
  $("search").value="";selectedId=null;expandedIds=new Set(members.map(m=>m.id));render();
  document.body.classList.add("printing-tree");
  const imgs=[...$("tree").querySelectorAll("img")];
- await Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;})));
+ await Promise.all(imgs.map(img=>{img.loading="eager";if(img.complete)return Promise.resolve();return new Promise(resolve=>{const done=()=>resolve();img.onload=done;img.onerror=done;setTimeout(done,8000);});}));
  const cleanup=()=>{document.body.classList.remove("printing-tree");$("search").value=oldQuery;expandedIds=oldExpanded;selectedId=oldSelected;render();window.removeEventListener("afterprint",cleanup);};
  window.addEventListener("afterprint",cleanup,{once:true});
  window.print();
