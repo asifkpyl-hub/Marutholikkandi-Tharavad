@@ -109,6 +109,12 @@ async function api(req, env, url) {
     const user = await auth(req,env);
     return user ? json({user:{username:user.username,display_name:user.display_name,role:user.role}}) : json({user:null},401);
   }
+  if (req.method === "GET" && path === "/api/public/members") {
+    // Dedicated unauthenticated read endpoint for the public family tree.
+    const rows = await env.FAMILY_DB.prepare("SELECT * FROM family_members ORDER BY full_name COLLATE NOCASE").all();
+    const members = (rows.results || []).map(safeMember);
+    return json({ok:true,count:members.length,members});
+  }
   if (req.method === "GET" && path === "/api/members") {
     const user = await auth(req,env);
     // The family has explicitly chosen public access for the family tree.
