@@ -35,6 +35,7 @@ $("tree").addEventListener("click",event=>{
  event.preventDefault();
  event.stopPropagation();
  event.stopImmediatePropagation();
+ closeMemberDetails();
  window.toggleBranch(button.dataset.expandId);
 },true);
 function render(){
@@ -42,11 +43,10 @@ function render(){
  const list=members.filter(m=>[m.full_name,m.ml_full_name,m.branch,m.ml_branch].some(v=>(v||"").toLocaleLowerCase().includes(q)));
  $("count").textContent=String(list.length);
  $("tree").innerHTML=list.length?buildTree(list):`<p class="muted">${t("noMembers")}</p>`;
- if(selectedId&&members.some(m=>m.id===selectedId))showDetails(selectedId);
  if(currentUser&&$("adminMembers"))$("adminMembers").innerHTML=members.map(m=>`<div class="admin-row"><span>${esc(displayName(m))} · ${esc(displayBranch(m)||"")}</span><span><button class="outline" onclick="editMember('${m.id}')">${t("edit")}</button><button class="outline" onclick="deleteMember('${m.id}')">${t("delete")}</button></span></div>`).join("");
  fillParents();
 }
-function closeMemberDetails(){const panel=$("memberDetails");if(!panel)return;panel.classList.add("hidden");panel.innerHTML="";document.body.classList.remove("details-open");}
+function closeMemberDetails(){const panel=$("memberDetails");selectedId=null;if(!panel)return;panel.classList.add("hidden");panel.innerHTML="";document.body.classList.remove("details-open");}
 window.closeMemberDetails=closeMemberDetails;
 function showDetails(id){
  const m=members.find(x=>x.id===id);if(!m)return;
