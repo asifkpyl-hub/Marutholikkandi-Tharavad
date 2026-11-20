@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'capacitor.config.ts'
+      - 'capacitor.config.json'
       - 'package.json'
       - '.github/workflows/android-apk.yml'
 
