@@ -176,7 +176,8 @@ async function printFamilyTree(){
   set(net,{display:"flex","flex-direction":"row","flex-wrap":"nowrap","align-items":"flex-start","justify-content":"center",width:"max-content","min-width":"max-content","max-width":"none",height:"max-content",overflow:"visible",transform:"none",opacity:"1",filter:"none"});
   clone.querySelectorAll(".tree-branch,.tree-children,.tree-node").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none",transform:"none",animation:"none",overflow:"visible",contain:"none"}));
   clone.querySelectorAll(".tree-children").forEach(el=>set(el,{"flex-wrap":"nowrap","align-items":"flex-start",width:"max-content","min-width":"max-content","max-width":"none",overflow:"visible"}));
-  clone.querySelectorAll(".tree-node.family-couple-card").forEach(el=>set(el,{width:"290px","min-width":"290px","max-width":"290px",height:"auto","min-height":"0",opacity:"1",visibility:"visible",filter:"none",background:"#fff",color:"#173b60",boxShadow:"0 8px 24px #244e7518",overflow:"visible"}));
+  clone.querySelectorAll(".tree-node.family-couple-card").forEach(el=>set(el,{width:"430px","min-width":"430px","max-width":"430px",height:"auto","min-height":"0",opacity:"1",visibility:"visible",filter:"none",background:"#fff",color:"#173b60",boxShadow:"0 8px 24px #244e7518",overflow:"visible"}));
+  clone.querySelectorAll(".node-name,.node-meta").forEach(el=>set(el,{"overflow-wrap":"normal","word-break":"normal","white-space":"normal","max-width":"100%"}));
   clone.querySelectorAll(".person-profile,.node-avatar,.node-avatar img,.node-name,.node-meta,.couple-profiles,.couple-card-actions").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none"}));
   clone.querySelectorAll(".node-name").forEach(el=>set(el,{"font-size":"18px","line-height":"1.35",color:"#173b60",fontWeight:"800"}));
   clone.querySelectorAll(".node-meta").forEach(el=>set(el,{"font-size":"14px","line-height":"1.45",color:"#71849b"}));
