@@ -65,7 +65,7 @@ function showDetails(id){
 }
 
 window.selectMember=id=>{selectedId=id;const m=members.find(x=>x.id===id);if(m){const p=m.parent1_id||m.parent2_id;if(p)expandedIds.add(p);}render();showDetails(id);};
-async function loadMembers(){const d=await api("/api/members");members=d.members||[];render();}
+async function loadMembers(){const tree=$("tree");try{const d=await api("/api/members");members=Array.isArray(d.members)?d.members:[];render();if(!members.length&&tree)tree.innerHTML=`<p class="muted">${t("noMembers")} (0 records returned by /api/members)</p>`;return members;}catch(err){console.error("Could not load public family members:",err);if(tree)tree.innerHTML=`<p class="muted">Unable to load family details. ${esc(err.message||"Please refresh the page or contact the administrator.")}</p>`;throw err;}}
 function fillParents(){
  const people=()=>{
   const entries=[];
@@ -142,4 +142,4 @@ async function printFamilyTree(){
 }
 $("downloadAll").onclick=printFamilyTree;$("previewPdf").onclick=printFamilyTree;
 applyLanguage();
-(async()=>{try{await loadMembers();const me=await api("/api/me");currentUser=me.user;if(currentUser)await showAdmin();}catch(e){/* public visitor */}})();
+(async()=>{try{await loadMembers();}catch(e){return;}try{const me=await api("/api/me");currentUser=me.user;if(currentUser)await showAdmin();}catch(e){/* public visitor */}})();
