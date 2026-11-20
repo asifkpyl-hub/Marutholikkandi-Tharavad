@@ -139,10 +139,10 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("treePreview").c
 $("search").oninput=()=>{selectedId=null;$("memberDetails").classList.add("hidden");render();};
 async function printFamilyTree(){
  const button=$("previewPdf"),originalLabel=button.textContent;
- const tree=$("tree"),oldQuery=$("search").value,oldExpanded=new Set(expandedIds),oldSelected=selectedId;
+ const oldQuery=$("search").value,oldExpanded=new Set(expandedIds),oldSelected=selectedId;
  const previewWasHidden=$("treePreview").classList.contains("hidden");
- const originalTreeStyle=tree.getAttribute("style");
- button.disabled=true;button.textContent=language==="ml"?"ചിത്രം തയ്യാറാക്കുന്നു…":"Preparing high-quality image…";
+ let exportHost=null;
+ button.disabled=true;button.textContent=language==="ml"?"ചിത്രം തയ്യാറാക്കുന്നു…":"Preparing print-quality image…";
  try{
   $("treePreview").classList.remove("hidden");
   $("search").value="";
@@ -151,57 +151,71 @@ async function printFamilyTree(){
   render();
   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   if(document.fonts?.ready)await document.fonts.ready;
-  const images=[...tree.querySelectorAll("img")];
+
+  const liveTree=$("tree"),liveNetwork=liveTree.querySelector(".family-network");
+  if(!liveNetwork||!members.length)throw new Error("No family tree is available to export.");
+
+  // Build an isolated desktop-layout copy. The live mobile viewport applies
+  // column/48vw rules that make the previous capture tiny and unreadable.
+  exportHost=document.createElement("div");
+  exportHost.setAttribute("aria-hidden","true");
+  exportHost.style.cssText="position:fixed;left:-50000px;top:0;width:max-content;height:auto;max-height:none;overflow:visible;z-index:-1;background:#edf5ff;contain:layout style;";
+  const exportTree=liveTree.cloneNode(true);
+  exportTree.removeAttribute("style");
+  exportTree.style.cssText="display:block!important;position:relative!important;width:max-content!important;min-width:0!important;max-width:none!important;height:auto!important;max-height:none!important;overflow:visible!important;zoom:1!important;padding:24px!important;margin:0!important;background:#edf5ff!important;box-sizing:border-box!important;";
+  exportHost.appendChild(exportTree);
+  document.body.appendChild(exportHost);
+
+  const set=(el,styles)=>{for(const [k,v] of Object.entries(styles))el.style.setProperty(k,v,"important");};
+  const network=exportTree.querySelector(".family-network");
+  if(!network)throw new Error("The family tree layout could not be prepared.");
+  set(network,{display:"flex","flex-direction":"row","flex-wrap":"nowrap","align-items":"flex-start","justify-content":"center",gap:"32px",width:"max-content","min-width":"max-content","max-width":"none",padding:"18px 24px 46px",overflow:"visible",transform:"none"});
+  exportTree.querySelectorAll(".tree-branch").forEach(el=>set(el,{display:"flex","flex-direction":"column","align-items":"center",width:"auto","min-width":"0","max-width":"none","flex":"0 0 auto",overflow:"visible",transform:"none",animation:"none"}));
+  exportTree.querySelectorAll(".tree-children").forEach(el=>set(el,{display:"flex","flex-direction":"row","flex-wrap":"nowrap","justify-content":"center","align-items":"flex-start",width:"max-content","min-width":"max-content","max-width":"none",gap:"22px","padding-top":"30px","margin-top":"14px",overflow:"visible",transform:"none",animation:"none"}));
+  exportTree.querySelectorAll(".tree-node.family-couple-card").forEach(el=>set(el,{display:"block",width:"430px","min-width":"430px","max-width":"430px","min-height":"0",padding:"18px",background:"#fff",color:"#183452",border:"1px solid #d8e6f5","border-radius":"22px","box-shadow":"0 12px 34px #2b69a51a",overflow:"visible",transform:"none",animation:"none","break-inside":"avoid"}));
+  exportTree.querySelectorAll(".couple-profiles").forEach(el=>set(el,{display:"grid","grid-template-columns":"1fr 1fr",gap:"10px","align-items":"stretch"}));
+  exportTree.querySelectorAll(".person-profile").forEach(el=>set(el,{display:"flex","flex-direction":"column","align-items":"center","justify-content":"flex-start",padding:"10px 7px",background:"#f4f8fe",color:"#183452",overflow:"visible"}));
+  exportTree.querySelectorAll(".node-avatar").forEach(el=>set(el,{width:"68px",height:"68px","min-width":"68px","min-height":"68px",display:"grid","place-items":"center",overflow:"hidden",opacity:"1",visibility:"visible"}));
+  exportTree.querySelectorAll(".node-avatar img").forEach(el=>set(el,{display:"block",width:"100%",height:"100%","object-fit":"cover",opacity:"1",visibility:"visible"}));
+  exportTree.querySelectorAll(".node-name").forEach(el=>set(el,{"font-size":"16px","line-height":"1.3",color:"#183b65",opacity:"1",visibility:"visible"}));
+  exportTree.querySelectorAll(".node-meta").forEach(el=>set(el,{"font-size":"13px","line-height":"1.4",color:"#7387a2",opacity:"1",visibility:"visible"}));
+  exportTree.querySelectorAll(".couple-card-actions").forEach(el=>set(el,{display:"flex",gap:"10px",opacity:"1",visibility:"visible"}));
+  exportTree.querySelectorAll(".branch-toggle,.details-toggle").forEach(el=>set(el,{display:"flex",opacity:"1",visibility:"visible",transform:"none",animation:"none"}));
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  if(document.fonts?.ready)await document.fonts.ready;
+
+  const images=[...exportTree.querySelectorAll("img")];
   await Promise.all(images.map(async img=>{
    if(img.complete&&img.naturalWidth>0)return;
    if(img.decode)try{await img.decode();}catch(_){}
    else await new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;});
   }));
-  if(!window.html2canvas)throw new Error("Image export library did not load. Refresh the page and try again.");
-  const network=tree.querySelector(".family-network");
-  if(!network)throw new Error("The family tree layout is empty. Refresh the page and try again.");
-  // Capture the actual full-width family network, not the scrollable viewport.
-  // Capturing #tree was producing a large blank canvas with the tree compressed into a corner.
-  tree.style.zoom="1";
-  tree.style.setProperty("width","max-content","important");
-  tree.style.setProperty("height","auto","important");
-  tree.style.setProperty("max-height","none","important");
-  tree.style.setProperty("overflow","visible","important");
-  tree.style.setProperty("flex","none","important");
-  network.style.setProperty("width","max-content","important");
-  network.style.setProperty("min-width","max-content","important");
-  network.style.setProperty("max-width","none","important");
-  network.style.setProperty("overflow","visible","important");
-  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   const rect=network.getBoundingClientRect();
   const width=Math.ceil(Math.max(rect.width,network.scrollWidth,network.offsetWidth));
   const height=Math.ceil(Math.max(rect.height,network.scrollHeight,network.offsetHeight));
-  if(!width||!height)throw new Error("Could not measure the complete family tree. Please refresh and try again.");
-  const maxSide=30000,maxPixels=120000000;
+  if(width<300||height<150)throw new Error("The complete family tree could not be measured. No file was downloaded.");
+  if(!window.html2canvas)throw new Error("The image export library did not load. Refresh and try again.");
+  const maxSide=30000,maxPixels=180000000;
   const scale=Math.min(3,maxSide/width,maxSide/height,Math.sqrt(maxPixels/(width*height)));
-  if(scale<0.5)throw new Error("The family tree is too large for one PNG. Please collapse some branches and download again.");
+  if(scale<0.75)throw new Error("The family tree is too large for one readable flex-print image. Please tell me and I will prepare a tiled print layout.");
   const canvas=await window.html2canvas(network,{
    backgroundColor:"#edf5ff",scale,useCORS:true,allowTaint:false,logging:false,
-   width,height,windowWidth:Math.max(width,document.documentElement.clientWidth),
-   windowHeight:Math.max(height,document.documentElement.clientHeight),
-   scrollX:0,scrollY:0,x:0,y:0,
-   imageTimeout:20000,
+   width,height,windowWidth:Math.max(1920,width+100),windowHeight:Math.max(1200,height+100),
+   scrollX:0,scrollY:0,x:0,y:0,imageTimeout:30000,
    onclone:cloned=>{
-    const clonedTree=cloned.querySelector("#tree");
-    if(clonedTree){clonedTree.style.setProperty("overflow","visible","important");clonedTree.style.setProperty("max-height","none","important");clonedTree.style.setProperty("height","auto","important");}
-    const clonedNetwork=cloned.querySelector("#tree .family-network");
-    if(clonedNetwork){clonedNetwork.style.setProperty("width","max-content","important");clonedNetwork.style.setProperty("min-width","max-content","important");clonedNetwork.style.setProperty("max-width","none","important");}
+    const root=cloned.querySelector(".family-network");
+    if(root){root.style.setProperty("width","max-content","important");root.style.setProperty("min-width","max-content","important");root.style.setProperty("flex-wrap","nowrap","important");}
    }
   });
   const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
-  if(!blob||blob.size<10000)throw new Error("The PNG export was blank or incomplete. No file was downloaded; please try again.");
+  if(!blob||blob.size<50000)throw new Error("The export was blank or incomplete. No image was downloaded.");
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download="Marutholikkandi-Family-Tree-Flex-Print.png";
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),60000);
  }catch(err){console.error("Family tree PNG export failed:",err);alert(err.message||"Image download failed.");}
  finally{
-  if(originalTreeStyle===null)tree.removeAttribute("style");else tree.setAttribute("style",originalTreeStyle);
+  if(exportHost)exportHost.remove();
   $("search").value=oldQuery;expandedIds=oldExpanded;selectedId=oldSelected;render();
   if(previewWasHidden)closeTreePreview();
   button.disabled=false;button.textContent=originalLabel;
