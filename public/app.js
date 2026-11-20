@@ -65,7 +65,7 @@ function showDetails(id){
 }
 
 window.selectMember=id=>{selectedId=id;const m=members.find(x=>x.id===id);if(m){const p=m.parent1_id||m.parent2_id;if(p)expandedIds.add(p);}render();showDetails(id);};
-async function loadMembers(){const tree=$("tree");try{const d=await api("/api/members");members=Array.isArray(d.members)?d.members:[];render();if(!members.length&&tree)tree.innerHTML=`<p class="muted">${t("noMembers")} (0 records returned by /api/members)</p>`;return members;}catch(err){console.error("Could not load public family members:",err);if(tree)tree.innerHTML=`<p class="muted">Unable to load family details. ${esc(err.message||"Please refresh the page or contact the administrator.")}</p>`;throw err;}}
+async function loadMembers(){const tree=$("tree");try{const d=await api("/api/public/members");members=Array.isArray(d.members)?d.members:[];render();if(!members.length&&tree)tree.innerHTML=`<p class="muted">${t("noMembers")} (${Number(d.count)||0} records in the public database)</p>`;return members;}catch(err){console.error("Could not load public family members:",err);if(tree)tree.innerHTML=`<p class="muted">Unable to load family details. ${esc(err.message||"Please refresh the page or contact the administrator.")}</p>`;throw err;}}
 function fillParents(){
  const people=()=>{
   const entries=[];
