@@ -294,3 +294,38 @@ footer span{flex:0 0 auto}footer [data-i18n="footer"]{white-space:nowrap}
 .tree-preview .tree-note{display:none!important;}
 .tree-preview #tree{flex:1 1 0!important;height:0!important;min-height:0!important;max-height:none!important;width:100%!important;overflow:auto!important;}
 @media(max-width:640px){.tree-preview{padding:5px!important;gap:4px!important}.tree-preview .tree-preview-head{min-height:34px!important;flex-basis:34px!important}.tree-preview .tree-preview-head h2{font-size:.88rem!important}.tree-preview .tree-preview-actions{gap:4px!important}.tree-preview .tree-preview-actions button{height:29px!important;min-height:29px!important;padding:4px 7px!important;font-size:.65rem!important}.tree-preview .toolbar{grid-template-rows:32px 32px!important;gap:3px!important;padding:4px 6px!important;max-height:12vh!important}.tree-preview .search-wrap,.tree-preview .search-wrap input{height:32px!important;min-height:32px!important}.tree-preview .tree-pan-controls{height:32px!important;gap:4px!important}.tree-preview .tree-pan-controls>button{width:29px!important;height:29px!important;min-height:29px!important;flex-basis:29px!important}.tree-preview .zoom-controls{height:30px!important;gap:3px!important;flex-basis:150px!important}.tree-preview .zoom-controls button{width:26px!important;height:26px!important;min-height:26px!important;flex-basis:26px!important}}
+
+/* Member detail popup: compact, scrollable and always closable */
+#memberDetails.detail-panel{position:fixed!important;z-index:1000!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:min(760px,calc(100vw - 28px))!important;max-height:min(84dvh,820px)!important;overflow-y:auto!important;overscroll-behavior:contain!important;margin:0!important;padding:22px!important;border-radius:20px!important;background:#fff!important;color:#183653!important;border:1px solid #d8e5f2!important;box-shadow:0 24px 90px #061c2d70!important}
+#memberDetails.detail-panel.hidden{display:none!important}
+body.details-open:after{content:"";position:fixed;inset:0;background:#071a2b99;backdrop-filter:blur(3px);z-index:999}
+#memberDetails .detail-close{position:sticky!important;top:0!important;left:0!important;z-index:5!important;display:grid!important;place-items:center!important;width:34px!important;height:34px!important;min-height:34px!important;padding:0!important;margin:0 0 8px!important;border-radius:10px!important;background:#eaf3fc!important;color:#174a73!important;border:1px solid #c9dced!important;font-size:1.45rem!important;line-height:1!important;box-shadow:0 2px 8px #173b6418!important}
+#memberDetails .detail-modal-title{margin:-40px 42px 14px 44px}
+#memberDetails .detail-modal-title h2{margin:2px 0 0;font-size:clamp(1.1rem,2.8vw,1.45rem);color:#183653;overflow-wrap:anywhere}
+#memberDetails .profile-pair{gap:10px}
+#memberDetails .profile-person{padding:11px;gap:10px;background:#f0f6ff;border:1px solid #dce8f6;color:#183653}
+#memberDetails .spouse-person{background:#fff3f8;border-color:#f0dce7}
+#memberDetails .profile-person .detail-avatar{width:58px;height:58px;flex:0 0 58px;border-radius:14px;font-size:1.3rem;background:#dceeff;color:#236da7}
+#memberDetails .profile-person h3{font-size:1rem!important;line-height:1.25;color:#183653;margin:0 0 3px}
+#memberDetails .profile-person .eyebrow{font-size:.62rem;letter-spacing:.12em;margin:0 0 4px;color:#c18a28}
+#memberDetails .profile-person .muted{font-size:.76rem;color:#71839a;display:block;overflow-wrap:anywhere}
+#memberDetails .detail-grid{grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin-top:13px}
+#memberDetails .detail-item{padding:9px 11px;background:#f2f6fc;border:1px solid #e0e9f4;border-radius:11px}
+#memberDetails .detail-item small{font-size:.72rem;color:#77879b;margin-bottom:3px}
+#memberDetails .detail-item strong{font-size:.84rem;line-height:1.35;color:#1b3858}
+#memberDetails .detail-bio{font-size:.85rem;line-height:1.55;color:#40566e;margin:12px 0 0}
+#memberDetails .detail-bio p{margin:4px 0}
+#memberDetails .detail-actions{margin-top:12px;padding-top:10px}
+#memberDetails .detail-actions button{font-size:.84rem;padding:9px 16px}
+#memberDetails .additional-spouse-display{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:9px}
+@media(max-width:640px){
+ #memberDetails.detail-panel{width:calc(100vw - 22px)!important;max-height:82dvh!important;padding:14px!important;border-radius:17px!important}
+ #memberDetails .profile-pair{grid-template-columns:1fr!important;gap:7px}
+ #memberDetails .profile-person{padding:9px;gap:9px}
+ #memberDetails .profile-person .detail-avatar{width:50px;height:50px;flex-basis:50px}
+ #memberDetails .detail-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:9px}
+ #memberDetails .detail-item{padding:8px}
+ #memberDetails .detail-item small{font-size:.66rem}
+ #memberDetails .detail-item strong{font-size:.78rem}
+ #memberDetails .detail-modal-title{margin-right:34px}
+}
