@@ -25,8 +25,8 @@ jobs:
           java-version: '21'
       - name: Install app dependencies
         run: npm install
-      - name: Install Capacitor Android
-        run: npm install @capacitor/android@^7.4.3
+      - name: Install Capacitor Android and TypeScript
+        run: npm install @capacitor/android@^7.4.3 typescript
       - name: Create Android project
         run: npx cap add android
       - name: Sync Android project
