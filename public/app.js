@@ -57,8 +57,8 @@ function showDetails(id){
   item(t("branchLabel"),displayBranch(m)),item(t("mlName"),m.ml_full_name),
   item(t("mlBranch"),m.ml_branch),item(t("spouseLabel"),shownSpouseName),
   item(t("spouseBranch"),shownSpouseBranch),item(t("spouseMlName"),m.spouse_ml_name),
-  item(t("spouseMlBranch"),m.spouse_ml_branch),item(t("spousePhoto"),m.spouse_photo_url),
-  item(t("photo"),m.photo_url),item(t("public"),m.is_public===0||m.is_public===false?t("notAvailable"):t("public"))
+  item(t("spouseMlBranch"),m.spouse_ml_branch),
+  item(t("public"),m.is_public===0||m.is_public===false?t("notAvailable"):t("public"))
  ].join("");
  $("memberDetails").innerHTML='<button type="button" class="detail-close" aria-label="Close details" onclick="closeMemberDetails()">×</button><div class="detail-modal-title"><span class="eyebrow">'+t("familyMember")+'</span><h2>'+name(displayName(m))+'</h2></div><div class="profile-pair"><div class="profile-person"><div class="detail-avatar">'+(m.photo_url?photo(m.photo_url,displayName(m)):name((m.full_name||"?").charAt(0)))+'</div><div><p class="eyebrow">'+t("familyMember")+'</p><h3>'+name(displayName(m))+'</h3><span class="muted">'+name(displayBranch(m)||t("family"))+'</span><span class="muted">('+ (m.gender==="പുരുഷൻ"?t("relationSon"):m.gender==="സ്ത്രീ"?t("relationDaughter"):t("relationOther")) +')</span></div></div>'+(shownSpouseName?spouseCard(m,true):'<div class="profile-person spouse-person spouse-empty"><div class="detail-avatar">＋</div><div><p class="eyebrow">'+t("relationSpouse")+'</p><h3>'+t("spouseMissing")+'</h3></div></div>')+'</div>'+(spouses.length?'<div class="additional-spouse-display">'+spouses.map(sp=>spouseCard(sp,false)).join("")+'</div>':"")+'<div class="detail-grid">'+details+'</div>'+(m.biography?'<div class="detail-bio"><strong>'+t("bio")+'</strong><p>'+name(m.biography)+'</p></div>':'')+(currentUser?.role==="admin"?'<div class="detail-actions"><button class="gold" type="button" data-member-edit="'+name(m.id)+'" onclick="editMember(this.dataset.memberEdit)">✎ '+t("edit")+'</button></div>':"");
  const panel=$("memberDetails");panel.classList.remove("hidden");document.body.classList.add("details-open");
