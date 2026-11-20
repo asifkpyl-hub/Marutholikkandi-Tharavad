@@ -163,6 +163,8 @@ async function printFamilyTree(){
   if(document.fonts?.ready)await document.fonts.ready;
   if(!members.length)throw new Error("No family members are available.");
   const live=$("tree"),liveNetwork=live.querySelector(".family-network");
+  const liveTreeWidth=Math.max(live.scrollWidth,liveNetwork?.scrollWidth||0,liveNetwork?.getBoundingClientRect().width||0);
+  const liveTreeHeight=Math.max(live.scrollHeight,liveNetwork?.scrollHeight||0,liveNetwork?.getBoundingClientRect().height||0);
   const visibleCardCount=liveNetwork.querySelectorAll(".tree-node[data-member-id]").length;
   if(visibleCardCount!==members.length)throw new Error("Tree preview is missing members ("+visibleCardCount+" of "+members.length+"). Please refresh; no incomplete image was downloaded.");
   if(!liveNetwork)throw new Error("The family tree preview is not ready.");
@@ -173,9 +175,12 @@ async function printFamilyTree(){
   host.appendChild(clone);document.body.appendChild(host);
   const set=(el,obj)=>Object.entries(obj).forEach(([k,v])=>el.style.setProperty(k,v,"important"));
   const net=clone.querySelector(".family-network");
-  set(net,{display:"flex","flex-direction":"row","flex-wrap":"nowrap","align-items":"flex-start","justify-content":"center",width:"max-content","min-width":"max-content","max-width":"none",height:"max-content",overflow:"visible",transform:"none",opacity:"1",filter:"none"});
-  clone.querySelectorAll(".tree-branch,.tree-children,.tree-node").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none",transform:"none",animation:"none",overflow:"visible",contain:"none"}));
-  clone.querySelectorAll(".tree-children").forEach(el=>set(el,{"flex-wrap":"nowrap","align-items":"flex-start",width:"max-content","min-width":"max-content","max-width":"none",overflow:"visible"}));
+  const clonedTree=clone.querySelector("#tree");
+  set(clonedTree,{display:"block",position:"relative",width:Math.max(1200,liveTreeWidth+160)+"px","min-width":Math.max(1200,liveTreeWidth+160)+"px","max-width":"none",height:Math.max(600,liveTreeHeight+160)+"px","min-height":Math.max(600,liveTreeHeight+160)+"px","max-height":"none",overflow:"visible",zoom:"1",transform:"none",contain:"none",padding:"24px"});
+  set(net,{display:"flex","flex-direction":"row","flex-wrap":"nowrap","align-items":"flex-start","justify-content":"center",width:"max-content","min-width":"max-content","max-width":"none",height:"max-content",overflow:"visible",transform:"none",opacity:"1",filter:"none",position:"relative"});
+  clone.querySelectorAll(".tree-branch,.tree-children,.tree-node").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none",transform:"none",animation:"none",overflow:"visible",contain:"none","flex-shrink":"0"}));
+  clone.querySelectorAll(".tree-branch").forEach(el=>set(el,{width:"max-content","min-width":"max-content","max-width":"none",overflow:"visible"}));
+  clone.querySelectorAll(".tree-children").forEach(el=>set(el,{"flex-wrap":"nowrap","align-items":"flex-start",width:"max-content","min-width":"max-content","max-width":"none",overflow:"visible","flex-shrink":"0"}));
   clone.querySelectorAll(".tree-node.family-couple-card").forEach(el=>set(el,{width:"430px","min-width":"430px","max-width":"430px",height:"auto","min-height":"0",opacity:"1",visibility:"visible",filter:"none",background:"#fff",color:"#173b60",boxShadow:"0 8px 24px #244e7518",overflow:"visible"}));
   clone.querySelectorAll(".node-name,.node-meta").forEach(el=>set(el,{"overflow-wrap":"normal","word-break":"normal","white-space":"normal","max-width":"100%"}));
   clone.querySelectorAll(".person-profile,.node-avatar,.node-avatar img,.node-name,.node-meta,.couple-profiles,.couple-card-actions").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none"}));
@@ -192,7 +197,7 @@ async function printFamilyTree(){
   const els=[clone,...clone.querySelectorAll("*")],rects=els.map(el=>el.getBoundingClientRect()).filter(r=>r.width||r.height);
   const left=Math.min(...rects.map(r=>r.left)),top=Math.min(...rects.map(r=>r.top));
   const right=Math.max(...rects.map(r=>r.right)),bottom=Math.max(...rects.map(r=>r.bottom));
-  const width=Math.ceil(right-left+48),height=Math.ceil(bottom-top+48);
+  const width=Math.ceil(Math.max(right-left+48,liveTreeWidth+160,clone.scrollWidth+48)),height=Math.ceil(Math.max(bottom-top+48,liveTreeHeight+160,clone.scrollHeight+48));
   if(width<300||height<200)throw new Error("The complete family tree could not be measured.");
   set(host,{width:width+"px",height:height+"px",overflow:"visible",left:"0",top:"0"});
   set(clone,{position:"absolute",left:(24-left+clone.getBoundingClientRect().left)+"px",top:(24-top+clone.getBoundingClientRect().top)+"px",width:"max-content",height:"max-content",overflow:"visible"});
