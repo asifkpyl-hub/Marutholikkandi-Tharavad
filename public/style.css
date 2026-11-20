@@ -476,7 +476,10 @@ body.details-open:after{display:none!important}
  border-radius:12px!important;
  background:#f2f7fd!important;
  color:#315b7e!important;
- font:700 .76rem/1.2 inherit!important;
+ font-family:inherit!important;
+ font-size:.76rem!important;
+ line-height:1.2!important;
+ font-weight:700!important;
  cursor:pointer!important;
  touch-action:manipulation!important;
 }
