@@ -431,3 +431,56 @@ body.details-open:after{display:none!important}
  .branch-toggle,.details-toggle{min-height:54px!important}
  .branch-label{font-size:.68rem!important}
 }
+
+
+/* Higher-specificity tree card controls override the legacy .tree-node button reset */
+.tree-node .couple-card-actions button.branch-toggle{
+ all:initial!important;
+ box-sizing:border-box!important;
+ appearance:none!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:4px!important;
+ width:100%!important;
+ min-width:0!important;
+ min-height:58px!important;
+ padding:6px 8px!important;
+ border:1px solid #c9e2f5!important;
+ border-radius:12px!important;
+ background:#eaf4ff!important;
+ color:#176da9!important;
+ box-shadow:0 2px 6px #245d8610!important;
+ font:inherit!important;
+ cursor:pointer!important;
+ touch-action:manipulation!important;
+ user-select:none!important;
+ -webkit-tap-highlight-color:transparent!important;
+}
+.tree-node .couple-card-actions .branch-count{display:block!important;font-size:.68rem!important;line-height:1!important;font-weight:800!important;color:#7189a2!important;pointer-events:none!important}
+.tree-node .couple-card-actions .branch-action{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:5px!important;white-space:nowrap!important;pointer-events:none!important}
+.tree-node .couple-card-actions .branch-symbol{font-size:1.12rem!important;line-height:1!important;font-weight:800!important}
+.tree-node .couple-card-actions .branch-label{font-size:.72rem!important;line-height:1.1!important;font-weight:700!important}
+.tree-node .couple-card-actions button.details-toggle{
+ all:initial!important;
+ box-sizing:border-box!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:100%!important;
+ min-width:0!important;
+ min-height:58px!important;
+ padding:8px 10px!important;
+ border:1px solid #d6e7f5!important;
+ border-radius:12px!important;
+ background:#f2f7fd!important;
+ color:#315b7e!important;
+ font:700 .76rem/1.2 inherit!important;
+ cursor:pointer!important;
+ touch-action:manipulation!important;
+}
+@media(max-width:420px){
+ .tree-node .couple-card-actions button.branch-toggle,.tree-node .couple-card-actions button.details-toggle{min-height:54px!important}
+ .tree-node .couple-card-actions .branch-label{font-size:.68rem!important}
+}
