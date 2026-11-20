@@ -142,7 +142,7 @@ async function printFamilyTree(){
  const oldQuery=$("search").value,oldExpanded=new Set(expandedIds),oldSelected=selectedId;
  const previewWasHidden=$("treePreview").classList.contains("hidden");
  let host=null;
- button.disabled=true;button.textContent=language==="ml"?"പ്രിന്റ് ചിത്രം തയ്യാറാക്കുന്നു…":"Preparing full-resolution tree…";
+ button.disabled=true;button.textContent=language==="ml"?"പ്രിന്റ് ചിത്രം തയ്യാറാക്കുന്നു…":"Preparing complete tree image…";
  try{
   $("treePreview").classList.remove("hidden");$("search").value="";selectedId=null;
   expandedIds=new Set(members.map(m=>m.id));render();
@@ -152,31 +152,39 @@ async function printFamilyTree(){
   const live=$("tree"),liveNetwork=live.querySelector(".family-network");
   if(!liveNetwork)throw new Error("The family tree preview is not ready.");
   host=document.createElement("div");
-  host.style.cssText="position:fixed;left:-60000px;top:0;width:max-content;height:auto;overflow:visible;z-index:-1;background:#edf5ff;";
+  host.style.cssText="position:fixed;left:0;top:0;width:max-content;height:max-content;min-width:0;min-height:0;max-width:none;max-height:none;overflow:visible;z-index:-1;background:#edf5ff;contain:none;";
   const clone=live.cloneNode(true);clone.removeAttribute("style");
-  clone.style.cssText="display:block!important;position:relative!important;width:max-content!important;max-width:none!important;height:auto!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;zoom:1!important;background:#edf5ff!important;";
+  clone.style.cssText="display:block!important;position:relative!important;width:max-content!important;min-width:0!important;max-width:none!important;height:max-content!important;min-height:0!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;zoom:1!important;contain:none!important;transform:none!important;background:#edf5ff!important;";
   host.appendChild(clone);document.body.appendChild(host);
   const set=(el,obj)=>Object.entries(obj).forEach(([k,v])=>el.style.setProperty(k,v,"important"));
   const net=clone.querySelector(".family-network");
-  // Preserve the preview's actual nested tree structure and connector layout.
-  set(net,{width:"max-content","min-width":"max-content","max-width":"none",height:"auto",overflow:"visible",transform:"none",opacity:"1",filter:"none"});
-  clone.querySelectorAll(".tree-branch,.tree-children,.tree-node").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none",transform:"none",animation:"none",overflow:"visible"}));
-  clone.querySelectorAll(".tree-node.family-couple-card").forEach(el=>set(el,{width:"440px","min-width":"440px","max-width":"440px",height:"auto","min-height":"0",opacity:"1",visibility:"visible",filter:"none",background:"#fff",color:"#173b60",boxShadow:"0 8px 24px #244e7518",overflow:"visible"}));
+  set(net,{display:"flex","flex-direction":"row","flex-wrap":"nowrap","align-items":"flex-start","justify-content":"center",width:"max-content","min-width":"max-content","max-width":"none",height:"max-content",overflow:"visible",transform:"none",opacity:"1",filter:"none"});
+  clone.querySelectorAll(".tree-branch,.tree-children,.tree-node").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none",transform:"none",animation:"none",overflow:"visible",contain:"none"}));
+  clone.querySelectorAll(".tree-children").forEach(el=>set(el,{"flex-wrap":"nowrap","align-items":"flex-start",width:"max-content","min-width":"max-content","max-width":"none",overflow:"visible"}));
+  clone.querySelectorAll(".tree-node.family-couple-card").forEach(el=>set(el,{width:"290px","min-width":"290px","max-width":"290px",height:"auto","min-height":"0",opacity:"1",visibility:"visible",filter:"none",background:"#fff",color:"#173b60",boxShadow:"0 8px 24px #244e7518",overflow:"visible"}));
   clone.querySelectorAll(".person-profile,.node-avatar,.node-avatar img,.node-name,.node-meta,.couple-profiles,.couple-card-actions").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none"}));
   clone.querySelectorAll(".node-name").forEach(el=>set(el,{"font-size":"18px","line-height":"1.35",color:"#173b60",fontWeight:"800"}));
   clone.querySelectorAll(".node-meta").forEach(el=>set(el,{"font-size":"14px","line-height":"1.45",color:"#71849b"}));
   clone.querySelectorAll(".node-avatar").forEach(el=>set(el,{opacity:"1",visibility:"visible",background:"#cce8fb"}));
   clone.querySelectorAll(".node-avatar img").forEach(el=>set(el,{display:"block",opacity:"1",visibility:"visible",width:"100%",height:"100%","object-fit":"cover"}));
-  clone.querySelectorAll(".branch-toggle,.details-toggle").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none"}));
+  clone.querySelectorAll("img").forEach(img=>img.loading="eager");
   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
   if(document.fonts?.ready)await document.fonts.ready;
   await Promise.all([...clone.querySelectorAll("img")].map(async img=>{if(img.complete&&img.naturalWidth)return;if(img.decode)try{await img.decode()}catch(_){}}));
-  const rect=net.getBoundingClientRect(),width=Math.ceil(Math.max(rect.width,net.scrollWidth,net.offsetWidth)),height=Math.ceil(Math.max(rect.height,net.scrollHeight,net.offsetHeight));
+  // Include the complete visual bounds of every nested branch, including overflow
+  // beyond the network's own scroll box (which caused clipped right/bottom rows).
+  const els=[clone,...clone.querySelectorAll("*")],rects=els.map(el=>el.getBoundingClientRect()).filter(r=>r.width||r.height);
+  const left=Math.min(...rects.map(r=>r.left)),top=Math.min(...rects.map(r=>r.top));
+  const right=Math.max(...rects.map(r=>r.right)),bottom=Math.max(...rects.map(r=>r.bottom));
+  const width=Math.ceil(right-left+48),height=Math.ceil(bottom-top+48);
   if(width<300||height<200)throw new Error("The complete family tree could not be measured.");
+  set(host,{width:width+"px",height:height+"px",overflow:"visible",left:"0",top:"0"});
+  set(clone,{position:"absolute",left:(24-left+clone.getBoundingClientRect().left)+"px",top:(24-top+clone.getBoundingClientRect().top)+"px",width:"max-content",height:"max-content",overflow:"visible"});
+  await new Promise(r=>requestAnimationFrame(r));
   if(!window.html2canvas)throw new Error("Image export library did not load. Refresh and try again.");
-  const scale=Math.min(3,30000/width,30000/height,Math.sqrt(180000000/(width*height)));
-  if(scale<0.65)throw new Error("The complete tree exceeds the safe size for one image. Please use a tiled large-format print export.");
-  const canvas=await window.html2canvas(net,{backgroundColor:"#edf5ff",scale,useCORS:true,allowTaint:false,logging:false,width,height,windowWidth:Math.max(1920,width+100),windowHeight:Math.max(1200,height+100),scrollX:0,scrollY:0,x:0,y:0,imageTimeout:30000});
+  const scale=Math.min(2.5,30000/width,30000/height,Math.sqrt(150000000/(width*height)));
+  if(scale<0.5)throw new Error("The family tree is exceptionally large. Please export it in high-resolution sections to avoid losing members.");
+  const canvas=await window.html2canvas(host,{backgroundColor:"#edf5ff",scale,useCORS:true,allowTaint:false,logging:false,width,height,windowWidth:Math.max(1920,width+100),windowHeight:Math.max(1200,height+100),scrollX:0,scrollY:0,x:0,y:0,imageTimeout:30000});
   const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
   if(!blob||blob.size<50000)throw new Error("The image export was blank or incomplete.");
   const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Marutholikkandi-Family-Tree-Full-Resolution.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
