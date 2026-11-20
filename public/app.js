@@ -31,10 +31,13 @@ function node(m,visited=new Set()){
 function buildTree(list){
  const ids=new Set(list.map(m=>m.id));
  const roots=list.filter(m=>!((m.parent1_id&&ids.has(m.parent1_id))||(m.parent2_id&&ids.has(m.parent2_id))));
+ const reachable=new Set();
+ const markReachable=member=>{if(!member||reachable.has(member.id))return;reachable.add(member.id);childrenOf(member.id).forEach(markReachable);};
+ roots.forEach(markReachable);
  const visited=new Set();
- const rendered=[...(roots.length?roots:list)].map(m=>node(m,visited)).filter(Boolean);
+ const topLevel=[...roots,...list.filter(member=>!reachable.has(member.id))];
+ const rendered=topLevel.map(member=>node(member,visited)).filter(Boolean);
  // Keep disconnected or cyclic records visible instead of silently dropping them.
- for(const member of list){if(!visited.has(member.id)){const fragment=node(member,visited);if(fragment)rendered.push(fragment);}}
  return `<div class="family-network">${rendered.join("")}</div>`;
 }
 window.toggleBranch=id=>{if(expandedIds.has(id))expandedIds.delete(id);else expandedIds.add(id);render();};
