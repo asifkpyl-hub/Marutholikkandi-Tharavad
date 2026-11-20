@@ -23,11 +23,20 @@ function node(m){
   <button type="button" class="person-profile member-profile" onclick="selectMember('${m.id}')"><span class="node-avatar">${avatar(m.photo_url,m.full_name)}</span><span class="node-name">${esc(displayName(m))}</span><span class="node-meta branch-line">${esc(displayBranch(m)||t("family"))}</span><span class="node-meta relation-line">(${esc(relation)})</span></button>
   ${m.spouse_name?`<button type="button" class="person-profile spouse-profile" onclick="selectMember('${m.id}')"><span class="node-avatar">${avatar(m.spouse_photo_url,m.spouse_name)}</span><span class="node-name">${esc(language==="ml"?(m.spouse_ml_name||m.spouse_name):(m.spouse_name||m.spouse_ml_name||""))}</span><span class="node-meta branch-line">${esc(language==="ml"?(m.spouse_ml_branch||m.spouse_branch):(m.spouse_branch||m.spouse_ml_branch||""))}</span><span class="node-meta relation-line">(${t("relationSpouse")})</span></button>`:`<div class="person-profile spouse-profile spouse-empty"><span class="spouse-placeholder">＋</span><span class="node-meta">${t("spouseMissing")}</span></div>`}
  </div>
- <div class="couple-card-actions"><span class="expand-control"><button type="button" class="expand-toggle" aria-label="${expanded?t("collapse"):t("expand")}" title="${expanded?t("collapse"):t("expand")}" onclick="event.preventDefault();event.stopPropagation();toggleBranch('${m.id}')">${expanded?"−":"＋"}</button><span class="expand-count">${kids.length||""}</span></span><button type="button" class="details-toggle" onclick="event.stopPropagation();selectMember('${m.id}')">${t("viewDetails")} ↗</button></div>
+ <div class="couple-card-actions"><span class="expand-control"><button type="button" class="expand-toggle" data-expand-id="${m.id}" aria-label="${expanded?t("collapse"):t("expand")}" title="${expanded?t("collapse"):t("expand")}">${expanded?"−":"＋"}</button><span class="expand-count">${kids.length||""}</span></span><button type="button" class="details-toggle" onclick="event.stopPropagation();selectMember('${m.id}')">${t("viewDetails")} ↗</button></div>
  </article>${expanded&&kids.length?`<div class="tree-children">${kids.map(node).join("")}</div>`:""}</div>`;
 }
 function buildTree(list){const ids=new Set(list.map(m=>m.id));const roots=list.filter(m=>!((m.parent1_id&&ids.has(m.parent1_id))||(!m.parent1_id&&m.parent2_id&&ids.has(m.parent2_id))));return `<div class="family-network">${(roots.length?roots:list).map(node).join("")}</div>`;}
 window.toggleBranch=id=>{if(expandedIds.has(id))expandedIds.delete(id);else expandedIds.add(id);render();};
+/* Capture expand taps before any card/profile click handler. */
+$("tree").addEventListener("click",event=>{
+ const button=event.target.closest("button.expand-toggle[data-expand-id]");
+ if(!button||!$("tree").contains(button))return;
+ event.preventDefault();
+ event.stopPropagation();
+ event.stopImmediatePropagation();
+ window.toggleBranch(button.dataset.expandId);
+},true);
 function render(){
  const q=($("search")?.value||"").trim().toLocaleLowerCase();
  const list=members.filter(m=>[m.full_name,m.ml_full_name,m.branch,m.ml_branch].some(v=>(v||"").toLocaleLowerCase().includes(q)));
