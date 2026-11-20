@@ -125,7 +125,7 @@ $("treeZoomReset").addEventListener("click",()=>{familyTreeZoom=1;applyTreeZoom(
 
 function openTreePreview(){$("treePreview").classList.remove("hidden");document.body.classList.add("tree-preview-open");document.body.style.overflow="hidden";render();setTimeout(()=>{$("tree").scrollTo({left:0,top:0,behavior:"instant"});},50);}
 function closeTreePreview(){$("treePreview").classList.add("hidden");document.body.classList.remove("tree-preview-open");document.body.style.overflow="";}
-$("openTreePreview").addEventListener("click",openTreePreview);$("heroOpenTreePreview").addEventListener("click",openTreePreview);$("closeTreePreview").addEventListener("click",closeTreePreview);
+$("openTreePreview")?.addEventListener("click",openTreePreview);$("heroOpenTreePreview")?.addEventListener("click",openTreePreview);$("closeTreePreview")?.addEventListener("click",closeTreePreview);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("treePreview").classList.contains("hidden"))closeTreePreview();});
 $("search").oninput=()=>{selectedId=null;$("memberDetails").classList.add("hidden");render();};
 async function printFamilyTree(){
