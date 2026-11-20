@@ -14,8 +14,10 @@ function spouseDisplayName(s){return language==="ml"?(s.ml_name||s.name||""):(s.
 function spouseDisplayBranch(s){return language==="ml"?(s.ml_branch||s.branch||""):(s.branch||s.ml_branch||"");}
 function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function childrenOf(id){return members.filter(m=>m.parent1_id===id||(!m.parent1_id&&m.parent2_id===id));}
-function node(m){
- const kids=childrenOf(m.id),expanded=expandedIds.has(m.id);
+function node(m,visited=new Set()){
+ if(!m||visited.has(m.id))return "";
+ visited.add(m.id);
+ const kids=childrenOf(m.id).filter(child=>!visited.has(child.id)),expanded=expandedIds.has(m.id);
  const relation=m.gender==="പുരുഷൻ"?t("relationSon"):m.gender==="സ്ത്രീ"?t("relationDaughter"):t("relationOther");
  const avatar=(src,name)=>src?`<img src="${esc(src)}" alt="" loading="lazy">`:esc((name||"?").trim().charAt(0));
  return `<div class="tree-branch"><article class="tree-node family-couple-card ${selectedId===m.id?"selected":""}" data-member-id="${m.id}">
@@ -24,9 +26,17 @@ function node(m){
   ${m.spouse_name?`<button type="button" class="person-profile spouse-profile" onclick="selectMember('${m.id}')"><span class="node-avatar">${avatar(m.spouse_photo_url,m.spouse_name)}</span><span class="node-name">${esc(language==="ml"?(m.spouse_ml_name||m.spouse_name):(m.spouse_name||m.spouse_ml_name||""))}</span><span class="node-meta branch-line">${esc(language==="ml"?(m.spouse_ml_branch||m.spouse_branch):(m.spouse_branch||m.spouse_ml_branch||""))}</span><span class="node-meta relation-line">(${t("relationSpouse")})</span></button>`:`<div class="person-profile spouse-profile spouse-empty"><span class="spouse-placeholder">＋</span><span class="node-meta">${t("spouseMissing")}</span></div>`}
  </div>
  <div class="couple-card-actions"><button type="button" class="branch-toggle" data-expand-id="${m.id}" aria-label="${expanded?t("collapse"):t("expand")}" title="${expanded?t("collapse"):t("expand")}"><span class="branch-count">${kids.length||0}</span><span class="branch-action"><span class="branch-symbol">${expanded?"−":"＋"}</span><span class="branch-label">${expanded?t("hideBranch"):t("expand")}</span></span></button><button type="button" class="details-toggle" onclick="event.stopPropagation();selectMember('${m.id}')"><svg class="details-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="details-divider"></span><span class="details-label">${t("viewDetails")} ↗</span></button></div>
- </article>${expanded&&kids.length?`<div class="tree-children">${kids.map(node).join("")}</div>`:""}</div>`;
+ </article>${expanded&&kids.length?`<div class="tree-children">${kids.map(child=>node(child,visited)).join("")}</div>`:""}</div>`;
 }
-function buildTree(list){const ids=new Set(list.map(m=>m.id));const roots=list.filter(m=>!((m.parent1_id&&ids.has(m.parent1_id))||(!m.parent1_id&&m.parent2_id&&ids.has(m.parent2_id))));return `<div class="family-network">${(roots.length?roots:list).map(node).join("")}</div>`;}
+function buildTree(list){
+ const ids=new Set(list.map(m=>m.id));
+ const roots=list.filter(m=>!((m.parent1_id&&ids.has(m.parent1_id))||(m.parent2_id&&ids.has(m.parent2_id))));
+ const visited=new Set();
+ const rendered=[...(roots.length?roots:list)].map(m=>node(m,visited)).filter(Boolean);
+ // Keep disconnected or cyclic records visible instead of silently dropping them.
+ for(const member of list){if(!visited.has(member.id)){const fragment=node(member,visited);if(fragment)rendered.push(fragment);}}
+ return `<div class="family-network">${rendered.join("")}</div>`;
+}
 window.toggleBranch=id=>{if(expandedIds.has(id))expandedIds.delete(id);else expandedIds.add(id);render();};
 /* Capture expand taps before any card/profile click handler. */
 $("tree").addEventListener("click",event=>{
@@ -150,6 +160,8 @@ async function printFamilyTree(){
   if(document.fonts?.ready)await document.fonts.ready;
   if(!members.length)throw new Error("No family members are available.");
   const live=$("tree"),liveNetwork=live.querySelector(".family-network");
+  const visibleCardCount=liveNetwork.querySelectorAll(".tree-node[data-member-id]").length;
+  if(visibleCardCount!==members.length)throw new Error("Tree preview is missing members ("+visibleCardCount+" of "+members.length+"). Please refresh; no incomplete image was downloaded.");
   if(!liveNetwork)throw new Error("The family tree preview is not ready.");
   host=document.createElement("div");
   host.style.cssText="position:fixed;left:0;top:0;width:max-content;height:max-content;min-width:0;min-height:0;max-width:none;max-height:none;overflow:visible;z-index:-1;background:#edf5ff;contain:none;";
