@@ -195,18 +195,30 @@ async function printFamilyTree(){
   await Promise.all([...clone.querySelectorAll("img")].map(async img=>{if(img.complete&&img.naturalWidth)return;if(img.decode)try{await img.decode()}catch(_){}}));
   // Include the complete visual bounds of every nested branch, including overflow
   // beyond the network's own scroll box (which caused clipped right/bottom rows).
-  const els=[clone,...clone.querySelectorAll("*")],rects=els.map(el=>el.getBoundingClientRect()).filter(r=>r.width||r.height);
-  const left=Math.min(...rects.map(r=>r.left)),top=Math.min(...rects.map(r=>r.top));
-  const right=Math.max(...rects.map(r=>r.right)),bottom=Math.max(...rects.map(r=>r.bottom));
-  const width=Math.ceil(Math.max(right-left+48,liveTreeWidth+160,clone.scrollWidth+48)),height=Math.ceil(Math.max(bottom-top+48,liveTreeHeight+160,clone.scrollHeight+48));
+  // Size the export from the actual laid-out tree bounds, not the preview viewport.
+  // Include every card and connector descendant so off-screen right/bottom branches count.
+  const treeRect=clone.getBoundingClientRect();
+  const measured=[...clone.querySelectorAll(".tree-node,.tree-children,.tree-branch,.family-network")];
+  const rects=[treeRect,...measured.map(el=>el.getBoundingClientRect())].filter(r=>r.width||r.height);
+  const minX=Math.min(...rects.map(r=>r.left)),minY=Math.min(...rects.map(r=>r.top));
+  const maxX=Math.max(...rects.map(r=>r.right)),maxY=Math.max(...rects.map(r=>r.bottom));
+  const contentWidth=Math.ceil(maxX-minX),contentHeight=Math.ceil(maxY-minY);
+  const width=Math.ceil(Math.max(contentWidth,clone.scrollWidth,net.scrollWidth,liveTreeWidth)+96);
+  const height=Math.ceil(Math.max(contentHeight,clone.scrollHeight,net.scrollHeight,liveTreeHeight)+96);
   if(width<300||height<200)throw new Error("The complete family tree could not be measured.");
-  set(host,{width:width+"px",height:height+"px",overflow:"visible",left:"0",top:"0"});
-  set(clone,{position:"absolute",left:(24-left+clone.getBoundingClientRect().left)+"px",top:(24-top+clone.getBoundingClientRect().top)+"px",width:"max-content",height:"max-content",overflow:"visible"});
-  await new Promise(r=>requestAnimationFrame(r));
+  // Put the measured top-left of the complete tree 48px inside the export canvas.
+  const cloneRect=clone.getBoundingClientRect();
+  const offsetX=48-(minX-cloneRect.left),offsetY=48-(minY-cloneRect.top);
+  set(host,{display:"block",position:"fixed",width:width+"px",height:height+"px","min-width":width+"px","min-height":height+"px","max-width":"none","max-height":"none",overflow:"visible",left:"0",top:"0",padding:"0",margin:"0"});
+  set(clone,{position:"absolute",left:offsetX+"px",top:offsetY+"px",width:"max-content",height:"max-content","min-width":"max-content","min-height":"max-content","max-width":"none","max-height":"none",overflow:"visible"});
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  // Recheck all member cards are inside the final canvas before rasterizing.
+  const outside=[...clone.querySelectorAll(".tree-node[data-member-id]")].filter(el=>{const r=el.getBoundingClientRect(),h=host.getBoundingClientRect();return r.left<h.left||r.top<h.top||r.right>h.right||r.bottom>h.bottom;});
+  if(outside.length)throw new Error("Export layout still exceeds its measured canvas ("+outside.length+" cards outside). No incomplete image was downloaded.");
   if(!window.html2canvas)throw new Error("Image export library did not load. Refresh and try again.");
   const scale=Math.min(2.5,30000/width,30000/height,Math.sqrt(150000000/(width*height)));
   if(scale<0.5)throw new Error("The family tree is exceptionally large. Please export it in high-resolution sections to avoid losing members.");
-  const canvas=await window.html2canvas(host,{backgroundColor:"#edf5ff",scale,useCORS:true,allowTaint:false,logging:false,width,height,windowWidth:Math.max(1920,width+100),windowHeight:Math.max(1200,height+100),scrollX:0,scrollY:0,x:0,y:0,imageTimeout:30000});
+  const canvas=await window.html2canvas(host,{backgroundColor:"#edf5ff",scale,useCORS:true,allowTaint:false,logging:false,width,height,windowWidth:Math.max(1920,width+200),windowHeight:Math.max(1200,height+200),scrollX:0,scrollY:0,x:0,y:0,imageTimeout:30000});
   const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
   if(!blob||blob.size<50000)throw new Error("The image export was blank or incomplete.");
   const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Marutholikkandi-Family-Tree-Full-Resolution.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
