@@ -825,3 +825,54 @@ body.details-open:after{display:none!important}
  .tree-node.family-couple-card .details-label{font-size:.68rem!important}
  .tree-node.family-couple-card .details-eye{flex-basis:22px!important;width:22px!important;height:22px!important}
 }
+
+
+/* 100% tree zoom: size each family card like the supplied reference */
+.tree-node.family-couple-card{
+ width:min(92vw,660px)!important;
+ min-width:min(92vw,540px)!important;
+ padding:22px!important;
+ border-radius:28px!important;
+}
+.tree-node.family-couple-card .couple-profiles{gap:22px!important}
+.tree-node.family-couple-card .person-profile{
+ gap:10px!important;padding:18px 12px!important;border-radius:20px!important;
+}
+.tree-node.family-couple-card .person-profile .node-avatar{
+ width:108px!important;height:108px!important;min-width:108px!important;
+ font-size:2rem!important;margin-bottom:6px!important;
+}
+.tree-node.family-couple-card .person-profile .node-name{font-size:1.35rem!important}
+.tree-node.family-couple-card .person-profile .node-meta{font-size:1.02rem!important;line-height:1.45!important}
+.tree-node.family-couple-card .couple-card-actions{
+ margin-top:20px!important;padding-top:20px!important;gap:14px!important;
+}
+.tree-node.family-couple-card .couple-card-actions button.branch-toggle,
+.tree-node.family-couple-card .couple-card-actions button.details-toggle{
+ height:76px!important;min-height:76px!important;max-height:76px!important;
+ border-radius:18px!important;padding:8px 12px!important;
+}
+.tree-node.family-couple-card .branch-icon-box{
+ flex-basis:42px!important;width:42px!important;height:42px!important;font-size:1.8rem!important;
+}
+.tree-node.family-couple-card .branch-divider,
+.tree-node.family-couple-card .details-divider{height:42px!important}
+.tree-node.family-couple-card .couple-card-actions .branch-count{font-size:1rem!important}
+.tree-node.family-couple-card .couple-card-actions .branch-label,
+.tree-node.family-couple-card .details-label{font-size:1rem!important}
+.tree-node.family-couple-card .details-eye{flex-basis:36px!important;width:36px!important;height:36px!important}
+@media(max-width:640px){
+ .tree-node.family-couple-card{
+  width:min(92vw,660px)!important;min-width:min(92vw,540px)!important;
+  padding:18px!important;
+ }
+ .tree-node.family-couple-card .person-profile .node-avatar{
+  width:92px!important;height:92px!important;min-width:92px!important;
+ }
+ .tree-node.family-couple-card .person-profile .node-name{font-size:1.15rem!important}
+ .tree-node.family-couple-card .person-profile .node-meta{font-size:.9rem!important}
+ .tree-node.family-couple-card .couple-card-actions button.branch-toggle,
+ .tree-node.family-couple-card .couple-card-actions button.details-toggle{
+  height:66px!important;min-height:66px!important;max-height:66px!important;
+ }
+}
