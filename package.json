@@ -11,6 +11,10 @@
     "db:migrate:remote": "wrangler d1 execute marutholikkandi-family-db --remote --file=./migrations/0001_initial.sql"
   },
   "devDependencies": {
-    "wrangler": "^4.0.0"
+    "wrangler": "^4.0.0",
+    "@capacitor/cli": "^7.4.3"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.4.3"
   }
 }
