@@ -30,7 +30,7 @@ function buildTree(list){const ids=new Set(list.map(m=>m.id));const roots=list.f
 window.toggleBranch=id=>{if(expandedIds.has(id))expandedIds.delete(id);else expandedIds.add(id);render();};
 /* Capture expand taps before any card/profile click handler. */
 $("tree").addEventListener("click",event=>{
- const button=event.target.closest("button.expand-toggle[data-expand-id]");
+ const button=event.target.closest("button.branch-toggle[data-expand-id]");
  if(!button||!$("tree").contains(button))return;
  event.preventDefault();
  event.stopPropagation();
