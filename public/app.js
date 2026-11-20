@@ -139,24 +139,73 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("treePreview").c
 $("search").oninput=()=>{selectedId=null;$("memberDetails").classList.add("hidden");render();};
 async function printFamilyTree(){
  const button=$("previewPdf"),originalLabel=button.textContent;
- button.disabled=true;button.textContent=language==="ml"?"ചിത്രം തയ്യാറാക്കുന്നു…":"Preparing image…";
- const oldQuery=$("search").value,oldExpanded=new Set(expandedIds),oldSelected=selectedId,previewWasHidden=$("treePreview").classList.contains("hidden");
+ const tree=$("tree"),oldQuery=$("search").value,oldExpanded=new Set(expandedIds),oldSelected=selectedId;
+ const previewWasHidden=$("treePreview").classList.contains("hidden");
+ const originalTreeStyle=tree.getAttribute("style");
+ button.disabled=true;button.textContent=language==="ml"?"ചിത്രം തയ്യാറാക്കുന്നു…":"Preparing high-quality image…";
  try{
-  $("treePreview").classList.remove("hidden");$("search").value="";selectedId=null;expandedIds=new Set(members.map(m=>m.id));render();
+  $("treePreview").classList.remove("hidden");
+  $("search").value="";
+  selectedId=null;
+  expandedIds=new Set(members.map(m=>m.id));
+  render();
   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-  const images=[...$("tree").querySelectorAll("img")];
-  await Promise.all(images.map(img=>img.decode?img.decode().catch(()=>{}):Promise.resolve()));
-  if(!window.html2canvas)throw new Error("Image export library did not load. Please refresh and try again.");
-  const tree=$("tree"),previousZoom=tree.style.zoom;
+  if(document.fonts?.ready)await document.fonts.ready;
+  const images=[...tree.querySelectorAll("img")];
+  await Promise.all(images.map(async img=>{
+   if(img.complete&&img.naturalWidth>0)return;
+   if(img.decode)try{await img.decode();}catch(_){}
+   else await new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;});
+  }));
+  if(!window.html2canvas)throw new Error("Image export library did not load. Refresh the page and try again.");
+  const network=tree.querySelector(".family-network");
+  if(!network)throw new Error("The family tree layout is empty. Refresh the page and try again.");
+  // Capture the actual full-width family network, not the scrollable viewport.
+  // Capturing #tree was producing a large blank canvas with the tree compressed into a corner.
   tree.style.zoom="1";
+  tree.style.setProperty("width","max-content","important");
+  tree.style.setProperty("height","auto","important");
+  tree.style.setProperty("max-height","none","important");
+  tree.style.setProperty("overflow","visible","important");
+  tree.style.setProperty("flex","none","important");
+  network.style.setProperty("width","max-content","important");
+  network.style.setProperty("min-width","max-content","important");
+  network.style.setProperty("max-width","none","important");
+  network.style.setProperty("overflow","visible","important");
   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-  const captureWidth=Math.max(tree.scrollWidth,tree.clientWidth),captureHeight=Math.max(tree.scrollHeight,tree.clientHeight);
-  const canvas=await window.html2canvas(tree,{backgroundColor:"#edf5ff",scale:2,useCORS:true,allowTaint:false,logging:false,width:captureWidth,height:captureHeight,windowWidth:captureWidth,windowHeight:captureHeight,scrollX:0,scrollY:0});
-  tree.style.zoom=previousZoom;
-  const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("Could not create the PNG image.");
-  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Marutholikkandi-Family-Tree.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
- }catch(err){alert(err.message||"Image download failed.");}
- finally{$("search").value=oldQuery;expandedIds=oldExpanded;selectedId=oldSelected;render();if(previewWasHidden)closeTreePreview();button.disabled=false;button.textContent=originalLabel;}
+  const rect=network.getBoundingClientRect();
+  const width=Math.ceil(Math.max(rect.width,network.scrollWidth,network.offsetWidth));
+  const height=Math.ceil(Math.max(rect.height,network.scrollHeight,network.offsetHeight));
+  if(!width||!height)throw new Error("Could not measure the complete family tree. Please refresh and try again.");
+  const maxSide=30000,maxPixels=120000000;
+  const scale=Math.min(3,maxSide/width,maxSide/height,Math.sqrt(maxPixels/(width*height)));
+  if(scale<0.5)throw new Error("The family tree is too large for one PNG. Please collapse some branches and download again.");
+  const canvas=await window.html2canvas(network,{
+   backgroundColor:"#edf5ff",scale,useCORS:true,allowTaint:false,logging:false,
+   width,height,windowWidth:Math.max(width,document.documentElement.clientWidth),
+   windowHeight:Math.max(height,document.documentElement.clientHeight),
+   scrollX:0,scrollY:0,x:0,y:0,
+   imageTimeout:20000,
+   onclone:cloned=>{
+    const clonedTree=cloned.querySelector("#tree");
+    if(clonedTree){clonedTree.style.setProperty("overflow","visible","important");clonedTree.style.setProperty("max-height","none","important");clonedTree.style.setProperty("height","auto","important");}
+    const clonedNetwork=cloned.querySelector("#tree .family-network");
+    if(clonedNetwork){clonedNetwork.style.setProperty("width","max-content","important");clonedNetwork.style.setProperty("min-width","max-content","important");clonedNetwork.style.setProperty("max-width","none","important");}
+   }
+  });
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
+  if(!blob||blob.size<10000)throw new Error("The PNG export was blank or incomplete. No file was downloaded; please try again.");
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="Marutholikkandi-Family-Tree-Flex-Print.png";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }catch(err){console.error("Family tree PNG export failed:",err);alert(err.message||"Image download failed.");}
+ finally{
+  if(originalTreeStyle===null)tree.removeAttribute("style");else tree.setAttribute("style",originalTreeStyle);
+  $("search").value=oldQuery;expandedIds=oldExpanded;selectedId=oldSelected;render();
+  if(previewWasHidden)closeTreePreview();
+  button.disabled=false;button.textContent=originalLabel;
+ }
 }
 $("downloadAll")?.addEventListener("click",printFamilyTree);$("previewPdf").onclick=printFamilyTree;
 applyLanguage();
