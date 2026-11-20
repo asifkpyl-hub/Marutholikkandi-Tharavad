@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.izaaziverse.marutholikkanditharavad',
-  appName: 'Marutholikkandi Tharavad',
+  appName: 'മരുതോലിക്കണ്ടി തറവാട്',
   webDir: 'www',
   server: {
     url: 'https://marutholikkandi-tharavad.izaaziverse.workers.dev',
