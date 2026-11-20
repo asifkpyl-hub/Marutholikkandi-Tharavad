@@ -147,8 +147,12 @@ async function printFamilyTree(){
   const images=[...$("tree").querySelectorAll("img")];
   await Promise.all(images.map(img=>img.decode?img.decode().catch(()=>{}):Promise.resolve()));
   if(!window.html2canvas)throw new Error("Image export library did not load. Please refresh and try again.");
-  const tree=$("tree");
-  const canvas=await window.html2canvas(tree,{backgroundColor:"#edf5ff",scale:3,useCORS:true,allowTaint:false,logging:false,width:tree.scrollWidth,height:tree.scrollHeight,windowWidth:window.innerWidth,windowHeight:window.innerHeight,scrollX:0,scrollY:0});
+  const tree=$("tree"),previousZoom=tree.style.zoom;
+  tree.style.zoom="1";
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  const captureWidth=Math.max(tree.scrollWidth,tree.clientWidth),captureHeight=Math.max(tree.scrollHeight,tree.clientHeight);
+  const canvas=await window.html2canvas(tree,{backgroundColor:"#edf5ff",scale:2,useCORS:true,allowTaint:false,logging:false,width:captureWidth,height:captureHeight,windowWidth:captureWidth,windowHeight:captureHeight,scrollX:0,scrollY:0});
+  tree.style.zoom=previousZoom;
   const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));if(!blob)throw new Error("Could not create the PNG image.");
   const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="Marutholikkandi-Family-Tree.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
  }catch(err){alert(err.message||"Image download failed.");}
