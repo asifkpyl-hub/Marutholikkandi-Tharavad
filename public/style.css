@@ -721,3 +721,35 @@ body.details-open:after{display:none!important}
  .tree-node.family-couple-card .couple-card-actions .branch-label,
  .tree-node.family-couple-card .couple-card-actions .details-label{font-size:.68rem!important}
 }
+
+
+/* Slightly smaller action buttons; preserve the existing 35:65 widths */
+.tree-node.family-couple-card .couple-card-actions button.branch-toggle,
+.tree-node.family-couple-card .couple-card-actions button.details-toggle{
+ height:54px!important;min-height:54px!important;max-height:54px!important;
+ padding:4px 6px!important;gap:5px!important;border-radius:12px!important;
+}
+.tree-node.family-couple-card .couple-card-actions .branch-icon-box,
+.tree-node.family-couple-card .couple-card-actions .details-eye{
+ flex:0 0 25px!important;width:25px!important;height:25px!important;
+}
+.tree-node.family-couple-card .couple-card-actions .branch-divider,
+.tree-node.family-couple-card .couple-card-actions .details-divider{
+ height:30px!important;
+}
+.tree-node.family-couple-card .couple-card-actions .branch-count{font-size:.78rem!important}
+.tree-node.family-couple-card .couple-card-actions .branch-label,
+.tree-node.family-couple-card .couple-card-actions .details-label{font-size:.7rem!important}
+@media(max-width:480px){
+ .tree-node.family-couple-card .couple-card-actions button.branch-toggle,
+ .tree-node.family-couple-card .couple-card-actions button.details-toggle{
+  height:50px!important;min-height:50px!important;max-height:50px!important;
+  padding:3px 5px!important;
+ }
+ .tree-node.family-couple-card .couple-card-actions .branch-icon-box,
+ .tree-node.family-couple-card .couple-card-actions .details-eye{
+  flex-basis:23px!important;width:23px!important;height:23px!important;
+ }
+ .tree-node.family-couple-card .couple-card-actions .branch-label,
+ .tree-node.family-couple-card .couple-card-actions .details-label{font-size:.66rem!important}
+}
