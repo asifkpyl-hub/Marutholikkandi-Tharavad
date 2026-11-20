@@ -175,7 +175,8 @@ async function printFamilyTree(){
   host.appendChild(clone);document.body.appendChild(host);
   const set=(el,obj)=>Object.entries(obj).forEach(([k,v])=>el.style.setProperty(k,v,"important"));
   const net=clone.querySelector(".family-network");
-  const clonedTree=clone.querySelector("#tree");
+  // The cloned element IS #tree; querySelector does not include the element itself.
+  const clonedTree=clone;
   set(clonedTree,{display:"block",position:"relative",width:Math.max(1200,liveTreeWidth+160)+"px","min-width":Math.max(1200,liveTreeWidth+160)+"px","max-width":"none",height:Math.max(600,liveTreeHeight+160)+"px","min-height":Math.max(600,liveTreeHeight+160)+"px","max-height":"none",overflow:"visible",zoom:"1",transform:"none",contain:"none",padding:"24px"});
   set(net,{display:"flex","flex-direction":"row","flex-wrap":"nowrap","align-items":"flex-start","justify-content":"center",width:"max-content","min-width":"max-content","max-width":"none",height:"max-content",overflow:"visible",transform:"none",opacity:"1",filter:"none",position:"relative"});
   clone.querySelectorAll(".tree-branch,.tree-children,.tree-node").forEach(el=>set(el,{opacity:"1",visibility:"visible",filter:"none",transform:"none",animation:"none",overflow:"visible",contain:"none","flex-shrink":"0"}));
