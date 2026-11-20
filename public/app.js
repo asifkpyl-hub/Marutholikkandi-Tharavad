@@ -103,12 +103,13 @@ $("openTreePreview").addEventListener("click",openTreePreview);$("closeTreePrevi
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("treePreview").classList.contains("hidden"))closeTreePreview();});
 $("search").oninput=()=>{selectedId=null;$("memberDetails").classList.add("hidden");render();};
 async function printFamilyTree(){
- const oldQuery=$("search").value, oldExpanded=new Set(expandedIds), oldSelected=selectedId;
+ const oldQuery=$("search").value, oldExpanded=new Set(expandedIds), oldSelected=selectedId, previewWasHidden=$("treePreview").classList.contains("hidden");
+ $("treePreview").classList.remove("hidden");
  $("search").value="";selectedId=null;expandedIds=new Set(members.map(m=>m.id));render();
  document.body.classList.add("printing-tree");
  const imgs=[...$("tree").querySelectorAll("img")];
  await Promise.all(imgs.map(img=>{img.loading="eager";if(img.complete)return Promise.resolve();return new Promise(resolve=>{const done=()=>resolve();img.onload=done;img.onerror=done;setTimeout(done,8000);});}));
- const cleanup=()=>{document.body.classList.remove("printing-tree");$("search").value=oldQuery;expandedIds=oldExpanded;selectedId=oldSelected;render();window.removeEventListener("afterprint",cleanup);};
+ const cleanup=()=>{document.body.classList.remove("printing-tree");if(previewWasHidden)$("treePreview").classList.add("hidden");$("search").value=oldQuery;expandedIds=oldExpanded;selectedId=oldSelected;render();window.removeEventListener("afterprint",cleanup);};
  window.addEventListener("afterprint",cleanup,{once:true});
  window.print();
  setTimeout(()=>{if(document.body.classList.contains("printing-tree"))cleanup();},120000);
