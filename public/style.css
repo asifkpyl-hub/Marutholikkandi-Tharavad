@@ -329,3 +329,22 @@ body.details-open:after{content:"";position:fixed;inset:0;background:#071a2b99;b
  #memberDetails .detail-item strong{font-size:.78rem}
  #memberDetails .detail-modal-title{margin-right:34px}
 }
+
+/* Full-screen member details view on phones and desktops */
+#memberDetails.detail-panel{position:fixed!important;inset:0!important;left:0!important;top:0!important;right:0!important;bottom:0!important;transform:none!important;width:100vw!important;height:100dvh!important;max-height:100dvh!important;max-width:none!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;margin:0!important;padding:clamp(16px,3vw,32px)!important;border-radius:0!important;z-index:1001!important;background:#f4f8ff!important;color:#183653!important;box-shadow:none!important;border:0!important}
+#memberDetails.detail-panel.hidden{display:none!important}
+body.details-open{overflow:hidden!important}
+body.details-open:after{display:none!important}
+#memberDetails .detail-close{position:sticky!important;top:0!important;left:0!important;z-index:10!important;margin:0 0 12px!important;width:42px!important;height:42px!important;min-height:42px!important;border-radius:12px!important;background:#e2effb!important;color:#174a73!important;font-size:1.6rem!important}
+#memberDetails .detail-modal-title{margin:0 0 18px 54px!important}
+#memberDetails .detail-modal-title h2{font-size:clamp(1.35rem,3vw,2rem)!important}
+#memberDetails .profile-pair{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))!important;gap:14px!important}
+#memberDetails .profile-person{padding:16px!important}
+#memberDetails .profile-person .detail-avatar{width:76px!important;height:76px!important;flex-basis:76px!important;overflow:hidden!important}
+#memberDetails .profile-person .detail-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+#memberDetails .detail-grid{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))!important;gap:10px!important}
+@media(max-width:640px){
+ #memberDetails.detail-panel{padding:14px!important}
+ #memberDetails .profile-pair{grid-template-columns:1fr!important}
+ #memberDetails .detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
