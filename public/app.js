@@ -140,6 +140,6 @@ async function printFamilyTree(){
  window.print();
  setTimeout(()=>{if(document.body.classList.contains("printing-tree"))cleanup();},120000);
 }
-$("downloadAll").onclick=printFamilyTree;$("previewPdf").onclick=printFamilyTree;
+$("downloadAll")?.addEventListener("click",printFamilyTree);$("previewPdf").onclick=printFamilyTree;
 applyLanguage();
 (async()=>{try{await loadMembers();}catch(e){return;}try{const me=await api("/api/me");currentUser=me.user;if(currentUser)await showAdmin();}catch(e){/* public visitor */}})();
