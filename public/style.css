@@ -348,3 +348,5 @@ body.details-open:after{display:none!important}
  #memberDetails .profile-pair{grid-template-columns:1fr!important}
  #memberDetails .detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
+
+.hero-tree-actions{display:flex;justify-content:center;width:100%;margin-top:28px}.hero-tree-preview{max-width:680px;margin:0;width:100%;background:linear-gradient(120deg,#fff,#edf6ff);color:#173b64;border:1px solid #d5e5f6}.hero-tree-preview .tree-preview-icon{border-radius:18px;border:1px solid #d5e5f6;padding:10px}.hero-tree-preview .tree-preview-icon svg{width:100%;height:100%;display:block;color:#2788ce}@media(max-width:600px){.hero-tree-actions{margin-top:22px;padding:0 2px}.hero-tree-preview{padding:12px 14px;gap:12px;border-radius:18px}.hero-tree-preview .tree-preview-icon{width:56px;height:56px;flex-basis:56px}.hero-tree-preview strong{font-size:1rem}.hero-tree-preview small{font-size:.78rem}}
