@@ -666,3 +666,58 @@ body.details-open:after{display:none!important}
  .tree-node article .couple-card-actions .branch-icon-box,
  .tree-node article .couple-card-actions .details-eye{flex-basis:25px!important;width:25px!important;height:25px!important}
 }
+
+
+/* Final compact card actions aligned to the 68px profile avatar */
+.tree-node.family-couple-card{
+ width:min(100%,430px)!important;
+ min-width:290px!important;
+ box-sizing:border-box!important;
+ padding:12px!important;
+}
+.tree-node.family-couple-card .couple-profiles{
+ width:100%!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ gap:10px!important;
+}
+.tree-node.family-couple-card .person-profile{
+ min-width:0!important;width:100%!important;box-sizing:border-box!important;
+}
+.tree-node.family-couple-card .person-profile .node-avatar{
+ width:68px!important;height:68px!important;min-width:68px!important;
+}
+.tree-node.family-couple-card .couple-card-actions{
+ width:100%!important;box-sizing:border-box!important;
+ grid-template-columns:minmax(0,35fr) minmax(0,65fr)!important;
+ gap:8px!important;margin-top:10px!important;padding-top:10px!important;
+}
+.tree-node.family-couple-card .couple-card-actions button.branch-toggle,
+.tree-node.family-couple-card .couple-card-actions button.details-toggle{
+ height:68px!important;min-height:68px!important;max-height:68px!important;
+ box-sizing:border-box!important;padding:6px 7px!important;border-radius:14px!important;gap:6px!important;
+}
+.tree-node.family-couple-card .couple-card-actions .branch-icon-box,
+.tree-node.family-couple-card .couple-card-actions .details-eye{
+ flex:0 0 32px!important;width:32px!important;height:32px!important;
+}
+.tree-node.family-couple-card .couple-card-actions .branch-divider,
+.tree-node.family-couple-card .couple-card-actions .details-divider{
+ height:38px!important;
+}
+.tree-node.family-couple-card .couple-card-actions .branch-count{
+ font-size:.9rem!important;line-height:1!important;
+}
+.tree-node.family-couple-card .couple-card-actions .branch-label,
+.tree-node.family-couple-card .couple-card-actions .details-label{
+ font-size:.76rem!important;line-height:1.08!important;
+}
+@media(max-width:480px){
+ .tree-node.family-couple-card{padding:10px!important}
+ .tree-node.family-couple-card .couple-card-actions{gap:6px!important}
+ .tree-node.family-couple-card .couple-card-actions button.branch-toggle,
+ .tree-node.family-couple-card .couple-card-actions button.details-toggle{height:64px!important;min-height:64px!important;max-height:64px!important;padding:5px!important}
+ .tree-node.family-couple-card .couple-card-actions .branch-icon-box,
+ .tree-node.family-couple-card .couple-card-actions .details-eye{flex-basis:28px!important;width:28px!important;height:28px!important}
+ .tree-node.family-couple-card .couple-card-actions .branch-label,
+ .tree-node.family-couple-card .couple-card-actions .details-label{font-size:.68rem!important}
+}
