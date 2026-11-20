@@ -111,9 +111,11 @@ async function api(req, env, url) {
   }
   if (req.method === "GET" && path === "/api/members") {
     const user = await auth(req,env);
-    const rows = user
-      ? await env.FAMILY_DB.prepare("SELECT * FROM family_members ORDER BY full_name COLLATE NOCASE").all()
-      : await env.FAMILY_DB.prepare("SELECT * FROM family_members WHERE is_public=1 ORDER BY full_name COLLATE NOCASE").all();
+    // The family has explicitly chosen public access for the family tree.
+    // Return all existing member records to visitors as well as signed-in users.
+    const rows = await env.FAMILY_DB.prepare(
+      "SELECT * FROM family_members ORDER BY full_name COLLATE NOCASE"
+    ).all();
     return json({members:(rows.results||[]).map(safeMember)});
   }
   if (path === "/api/members" && req.method === "POST") {
