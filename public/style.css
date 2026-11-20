@@ -620,3 +620,49 @@ body.details-open:after{display:none!important}
  .tree-node article .couple-card-actions .branch-label,
  .tree-node article .couple-card-actions .details-label{font-size:.78rem!important}
 }
+
+
+/* Compact action buttons: 35% expand / 65% details */
+.tree-node .couple-card-actions{
+ display:grid!important;
+ grid-template-columns:minmax(0,35fr) minmax(0,65fr)!important;
+ gap:10px!important;
+}
+.tree-node article .couple-card-actions button.branch-toggle,
+.tree-node article .couple-card-actions button.details-toggle{
+ height:clamp(66px,14vw,104px)!important;
+ min-height:0!important;
+ padding:8px 9px!important;
+ border-radius:16px!important;
+ gap:8px!important;
+ box-shadow:0 3px 0 #0871b9,0 7px 14px #0875b922!important;
+}
+.tree-node article .couple-card-actions button.details-toggle{
+ box-shadow:0 3px 0 #d5e4f2,0 7px 14px #174b7315!important;
+}
+.tree-node article .couple-card-actions .branch-icon-box,
+.tree-node article .couple-card-actions .details-eye{
+ flex-basis:clamp(27px,4.8vw,38px)!important;
+ width:clamp(27px,4.8vw,38px)!important;
+ height:clamp(27px,4.8vw,38px)!important;
+}
+.tree-node article .couple-card-actions .branch-divider,
+.tree-node article .couple-card-actions .details-divider{
+ height:clamp(32px,5.5vw,48px)!important;
+}
+.tree-node article .couple-card-actions .branch-label,
+.tree-node article .couple-card-actions .details-label{
+ font-size:clamp(.7rem,1.6vw,.95rem)!important;
+}
+.tree-node article .couple-card-actions .branch-count{
+ font-size:clamp(.85rem,1.8vw,1.05rem)!important;
+}
+@media(max-width:480px){
+ .tree-node .couple-card-actions{gap:7px!important}
+ .tree-node article .couple-card-actions button.branch-toggle,
+ .tree-node article .couple-card-actions button.details-toggle{height:64px!important;padding:6px 5px!important;gap:5px!important}
+ .tree-node article .couple-card-actions .branch-label,
+ .tree-node article .couple-card-actions .details-label{font-size:.68rem!important}
+ .tree-node article .couple-card-actions .branch-icon-box,
+ .tree-node article .couple-card-actions .details-eye{flex-basis:25px!important;width:25px!important;height:25px!important}
+}
